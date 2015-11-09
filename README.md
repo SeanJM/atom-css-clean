@@ -1,6 +1,6 @@
 # css-clean package
 
-A package which sorts and aligns CSS and SASS files.
+A package which sorts and aligns CSS and SASS.
 
 - Shortcut is **CMD/CTRL+ALT+C**
 
