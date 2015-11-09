@@ -1,0 +1,18 @@
+{
+  "context-menu": {
+    "atom-text-editor": [{
+      "label": "Clean CSS",
+      "command": "css-clean:convert"
+    }]
+  },
+  "menu": [{
+    "label": "Packages",
+    "submenu": [{
+    "label": "css-clean",
+    "submenu": [{
+        "label": "Clean CSS",
+        "command": "css-clean:convert"
+      }]
+    }]
+  }]
+}
