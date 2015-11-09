@@ -13,8 +13,9 @@
       if (/^source\.css/.test(editor.getRootScopeDescriptor().scopes[0])) {
         clean = cleanCss(editorText)
           .sortContent()
-          .alignProperties();
-        editor.setText(clean.value());
+          .alignProperties()
+          .value();
+        editor.setText(clean);
         editor.setSelectedBufferRange(selectedBuffer);
       }
     }
