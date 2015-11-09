@@ -1,10 +1,7 @@
 # css-clean package
 
-A short description of your package.
+A package which sorts and aligns CSS and SASS files.
 
-![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+- Shortcut is **CMD/CTRL+ALT+C**
 
-```css
-this {}
-
-```
+![Package screenshot](https://raw.githubusercontent.com/SeanJM/css-clean/master/screenshot-01.png)
