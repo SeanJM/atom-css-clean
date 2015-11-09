@@ -15,8 +15,7 @@ To create a new function in `exports.js`, you will have to create a `cleanCss.fn
 Example:
 
 ```javascript
-cleanCss.fn.myFunctionName = function () {
-  // This is an array containing every cssGroup
+(function () {
   function myRecursiveFunction(cssGroupList) {
     cssGroupList.forEach(function (cssGroup) {
       cssGroup.content.forEach(function (propertyValueObject) {
@@ -33,8 +32,15 @@ cleanCss.fn.myFunctionName = function () {
       }
     });
   }
-  // I would recommend using a recursive function to transform the nested
-  // children
-  myRecursiveFunction(this);
-};
+  cleanCss.fn.myFunctionName = function () {
+    // I would recommend using a recursive function to transform the nested
+    // children
+    // This is an array containing every cssGroup
+    myRecursiveFunction(this);
+  };
+}());
 ```
+
+Then you will need to install and run [**Grunt**](http://gruntjs.com/installing-grunt) to concatenate your plugin into `lib/css-clean.js`
+
+Then you will need to reload Atom (CMD/CTRL+SPECIAL+ALT+L) to see your changes and additions.
