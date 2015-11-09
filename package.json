@@ -1,13 +1,13 @@
 {
   "name": "css-clean",
   "main": "./lib/css-clean",
-  "version": "0.0.0",
-  "description": "A short description of your package",
+  "version": "1.0.0",
+  "description": "A package for sorting and aligning CSS and SASS.",
   "keywords": [],
   "activationCommands": {
     "atom-workspace": "css-clean:convert"
   },
-  "repository": "https://github.com/atom/css-clean",
+  "repository": "https://github.com/SeanJM/css-clean",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
