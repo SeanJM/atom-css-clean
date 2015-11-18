@@ -1,19 +1,12 @@
-function cleanCss(string, tabLength) {
+function cleanCss(string) {
   var selectorMatch = /([\@\.\%\#\*a-zA-Z0-9\[\]\+\~\=\"\'\_\-\:\&\n,\(\) ]+)\{[\s\S]+\}/;
   var _             = cleanCss.microdash;
   var cssGroup      = [];
   function getTabspaceLength() {
-    var tabStart = string.match(/^[ \t]+[a-zA-Z0-9\-\.\#\[\%\@]+/mg);
-    // When the tabLength is provided, return it
-    if (typeof tabLength === 'number') {
-      return tabLength;
-    } else if (tabStart === null) {
-      // Our worst case scenario where we have no line breaks
-      tabStart = string.match(/;[ ]+[a-zA-Z0-9\-\.\#\[\%]+/mg);
-    }
-    // Find the smallest space at the start of a line and slice the array to
-    // take a small sample for checking
-    if (tabStart.length === 1) {
+    var tabStart = string.match(/(^[ \t]+|;[ \t]+)[a-zA-Z0-9\-\.\#\[\%\@]+/mg);
+    if (tabStart === null) {
+      return 2;
+    } else if (tabStart.length === 1) {
       return tabStart[0].match(/[ \t]+/)[0].length;
     }
     return tabStart.slice(0, 10).reduce(function (a, b) {
