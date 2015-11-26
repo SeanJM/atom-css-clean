@@ -1,7 +1,7 @@
 {
   "name": "css-clean",
   "main": "./lib/css-clean",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A package for sorting and aligning CSS and SASS.",
   "keywords": [],
   "activationCommands": {
