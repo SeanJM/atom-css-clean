@@ -112,7 +112,7 @@ function cleanCss(string) {
         };
         if (hasGroup(cssObj.content)) {
           cssObj.child = [];
-          groups       = getGroup(cssObj.content, cssObj.child, tabLength * 2);
+          groups       = getGroup(cssObj.content, cssObj.child, tabLength + 2);
           groups.forEach(function (group) {
             cssObj.content = cssObj.content.replace(group.value, '').replace(/\n[ \t]+\n/g, '\n');
           });
