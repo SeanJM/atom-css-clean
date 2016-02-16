@@ -1,10 +1,5 @@
 .DS_Store
 npm-debug.log
 node_modules
-test2.scss
-test.scss
-screenshot.ai
-
-test3.scss
-
-test4.scss
+*.scss
+*.ai
