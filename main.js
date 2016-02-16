@@ -285,7 +285,7 @@ capture['sass mixin'] = function (string, opt) {
     name : m[1],
     scope : opt.scope,
     strlen : c.strlen,
-    value : m[2],
+    value : m[2].trim(),
   };
   if (args.length) {
     args = args.slice(-1)[0].value;
