@@ -1,14 +1,19 @@
 capture['sass mixin'] = function (string, opt) {
   var c = capture.shared.nested(string, opt);
-  var args = lasso.between(c.arguments, '(', ')').slice(-1)[0].value;
-  var m = c.arguments.match(/^(@mixin)\s+([^(]+?)\(/);
-  return {
-    scope : opt.scope,
+  var args = lasso.between(c.arguments, '(', ')');
+  var m = c.arguments.split(' ').filter((a) => a.length);
+  var o = {
+    arguments : false,
     content : c.content,
-    name : m[1],
-    value : m[2].trim(),
-    arguments : args.split(',').map(function (a) { return a.trim(); }),
     depth : opt.depth,
-    strlen : c.strlen
+    name : m[0],
+    scope : opt.scope,
+    strlen : c.strlen,
+    value : m[2],
   };
+  if (args.length) {
+    args = args.slice(-1)[0].value;
+    o.arguments = args.split(',').map((a) => a.trim());
+  }
+  return o;
 };
