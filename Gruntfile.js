@@ -1,8 +1,7 @@
 var matchFile = require('match-file-utility');
 var js = {
-  cssClean : matchFile('src/', /\.js$/)
+  cssClean : matchFile('src/css-clean-src', /\.js$/)
   .smartSort()
-  .filter((a) => a !== 'src/exports.js')
   .concat('src/exports.js')
 };
 
