@@ -1,73 +1,44 @@
-var images = {};
-var js = {};
-(function () {
-  var lib = {
-    init: [
-      'src/init.js'
-    ],
-    root: [
-      'src/cleanCss.js',
-      'src/cleanCss.fn.js',
-      'src/cleanCss.microdash.js',
-      'src/cleanCss.*.js',
-      'src/exports.js',
-    ]
-  };
-  function get(getGroup) {
-    var getFiles = [];
-    for (var i = 0, n = getGroup.length; i < n; i++) {
-      getFiles = getFiles.concat(lib[getGroup[i]]);
-    }
-    return getFiles;
-  }
-  js.owner = get([
-    'init',
-    'root',
-  ]);
-  js.all = get([
-    'init',
-    'root',
-  ])
-})();
+var matchFile = require('match-file-utility');
+var js = {
+  cssClean : matchFile('src/', /\.js$/)
+  .smartSort()
+  .filter((a) => a !== 'src/exports.js')
+  .concat('src/exports.js')
+};
+
 module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    uglify: {
+    pkg : grunt.file.readJSON('package.json'),
+    concat : {
       options: {
-        banner    : '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
         sourceMap : true,
-        mangle    : false,
-        compress  : false
       },
-      js: {
-        files: {
-          'lib/css-clean.js' : js.all,
+      js : {
+        files : {
+          'main.js' : js.cssClean,
         }
       }
     },
-    watch: {
-      js_all: {
-        files: js.all,
-        tasks: ['uglify']
+    watch : {
+      js_all : {
+        files : js.cssClean,
+        tasks : ['concat']
       },
-      configFiles: {
-        files: ['Gruntfile.js'],
-        options: {
-          reload: true
+      configFiles : {
+        files : ['Gruntfile.js'],
+        options : {
+          reload : true
         },
-        tasks: ['default']
+        tasks : ['default']
       }
-    },
-    jshint: {
-      all: js.all
     }
   });
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   // Default task(s).
   /*grunt.registerTask('default', ['concat_sourcemap','sass','autoprefixer','uglify','imagemin','watch']);*/
-  grunt.registerTask('default', ['uglify', 'watch']);
+  grunt.registerTask('default', ['concat', 'watch']);
 };
