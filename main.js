@@ -563,6 +563,10 @@ function cleanCss(string) {
 
 cleanCss.fn = {};
 
+if (module) {
+  module.exports = cleanCss;
+}
+
 cleanCss.fn.align = function (settings, string) {
   settings.align = true;
 };

@@ -172,3 +172,7 @@ function cleanCss(string) {
 }
 
 cleanCss.fn = {};
+
+if (module) {
+  module.exports = cleanCss;
+}
