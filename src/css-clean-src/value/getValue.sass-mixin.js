@@ -1,5 +1,4 @@
 getValue['sass mixin'] = function (settings, element, parent) {
-  console.log(element);
   var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
   var args = '';
   var v = getValue.shared.nested(settings, element, parent);
