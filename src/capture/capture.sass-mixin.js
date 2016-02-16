@@ -3,13 +3,12 @@ capture['sass mixin'] = function (string, opt) {
   var args = lasso.between(c.arguments, '(', ')');
   var m = c.arguments.split(' ').filter((a) => a.length);
   var o = {
-    arguments : false,
     content : c.content,
     depth : opt.depth,
     name : m[0],
     scope : opt.scope,
     strlen : c.strlen,
-    value : m[2],
+    value : m[1],
   };
   if (args.length) {
     args = args.slice(-1)[0].value;

@@ -277,17 +277,21 @@ capture['sass include'] = function (string, opt) {
 
 capture['sass mixin'] = function (string, opt) {
   var c = capture.shared.nested(string, opt);
-  var args = lasso.between(c.arguments, '(', ')').slice(-1)[0].value;
-  var m = c.arguments.match(/^(@mixin)\s+([^(]+?)\(/);
-  return {
-    scope : opt.scope,
+  var args = lasso.between(c.arguments, '(', ')');
+  var m = c.arguments.split(' ').filter((a) => a.length);
+  var o = {
     content : c.content,
-    name : m[1],
-    value : m[2].trim(),
-    arguments : args.split(',').map(function (a) { return a.trim(); }),
     depth : opt.depth,
-    strlen : c.strlen
+    name : m[0],
+    scope : opt.scope,
+    strlen : c.strlen,
+    value : m[1],
   };
+  if (args.length) {
+    args = args.slice(-1)[0].value;
+    o.arguments = args.split(',').map((a) => a.trim());
+  }
+  return o;
 };
 
 capture['sass return'] = function (string, opt) {
@@ -1015,9 +1019,13 @@ getValue['sass include'] = function (settings, element, parent) {
 
 getValue['sass mixin'] = function (settings, element, parent) {
   var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  var args = '(' + element.arguments.join(', ') + ')';
-  var s = `${tab}${element.name} ${element.value}${args}`;
+  var args = '';
   var v = getValue.shared.nested(settings, element, parent);
+  var s = `${tab}${element.name} ${element.value}`;
+  if (element.arguments) {
+     args = element.arguments ? '(' + element.arguments.join(', ') + ')' : '';
+     s = `${tab}${element.name} ${element.value}${args}`;
+  }
   return `${s} {\n${v}}`;
 };
 
