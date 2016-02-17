@@ -52,7 +52,6 @@ capture.scope = function (value) {
     return 'sass if';
   }
   if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
-    console.log(value);
     return 'sass placeholder';
   }
   if (selector.test(value)) {
