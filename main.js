@@ -625,7 +625,7 @@ function sortCss(settings, cssObject) {
         'selector',
       ]
     });
-    if (Array.isArray(array.content)) {
+    if (Array.isArray(array.content) && array.content.length) {
       sortDeep(array.content);
     }
   }
@@ -643,7 +643,7 @@ function sortCss(settings, cssObject) {
   });
   if (settings.sortBlockScope) {
     for (var i = 0, n = cssObject.length; i < n; i++) {
-      if (Array.isArray(cssObject[i].content)) {
+      if (Array.isArray(cssObject[i].content) && cssObject[i].content.length) {
         sortDeep(cssObject[i].content);
       }
     }
