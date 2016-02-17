@@ -23,7 +23,6 @@ function sortCss(settings, cssObject) {
     'sass mixin',
     'sass include block',
     'sass placeholder',
-    'selector'
   ]);
   if (settings.sortBlockScope) {
     for (var i = 0, n = cssObject.length; i < n; i++) {
