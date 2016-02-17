@@ -13,8 +13,10 @@ function sortCss(settings, cssObject) {
         'selector',
       ]
     });
-    if (Array.isArray(array.content) && array.content.length) {
-      sortDeep(array.content);
+    for (var i = 0, n = array.length; i < n; i++) {
+      if (Array.isArray(array[i].content) && array[i].content.length) {
+        sortDeep(array[i].content);
+      }
     }
   }
   sortCss.scope(settings, cssObject, {
