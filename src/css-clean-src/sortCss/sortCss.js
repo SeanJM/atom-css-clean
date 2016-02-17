@@ -11,17 +11,6 @@ function sortCss(settings, cssObject) {
         'sass extend',
         'property group',
         'selector',
-      ],
-      sort : [
-        'sass function',
-        'sass import',
-        'sass include',
-        'sass include arguments',
-        'sass mixin',
-        'sass include block',
-        'sass extend',
-        'property group',
-        'selector',
       ]
     });
     if (Array.isArray(array.content)) {
@@ -37,16 +26,6 @@ function sortCss(settings, cssObject) {
       'sass mixin',
       'sass include block',
       'sass placeholder',
-    ],
-    sort : [
-      'sass import',
-      'sass include',
-      'sass variable assignment',
-      'sass function',
-      'sass mixin',
-      'sass include block',
-      'sass placeholder',
-      'selector'
     ]
   });
   if (settings.sortBlockScope) {

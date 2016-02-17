@@ -609,17 +609,6 @@ function sortCss(settings, cssObject) {
         'sass extend',
         'property group',
         'selector',
-      ],
-      sort : [
-        'sass function',
-        'sass import',
-        'sass include',
-        'sass include arguments',
-        'sass mixin',
-        'sass include block',
-        'sass extend',
-        'property group',
-        'selector',
       ]
     });
     if (Array.isArray(array.content)) {
@@ -635,16 +624,6 @@ function sortCss(settings, cssObject) {
       'sass mixin',
       'sass include block',
       'sass placeholder',
-    ],
-    sort : [
-      'sass import',
-      'sass include',
-      'sass variable assignment',
-      'sass function',
-      'sass mixin',
-      'sass include block',
-      'sass placeholder',
-      'selector'
     ]
   });
   if (settings.sortBlockScope) {
@@ -662,7 +641,6 @@ sortCss.each = {};
 
 sortCss.scope = function (settings, elementList, opt) {
   var displace = {};
-  var sort = {};
   var start = 0;
   var name;
   var i;
@@ -676,15 +654,8 @@ sortCss.scope = function (settings, elementList, opt) {
   for (i = 0, n = opt.displace.length; i < n; i++) {
     displace[opt.displace[i]] = [];
   }
-  for (i = 0, n = opt.sort.length; i < n; i++) {
-    sort[opt.sort[i]] = [];
-  }
   for (i = elementList.length - 1; i >= start; i--) {
     name = elementList[i].scope;
-    // Add to sort list
-    if (opt.sort.indexOf(name) !== -1) {
-      sort[name].push(elementList[i]);
-    }
     // Add to displace list
     if (opt.displace.indexOf(name) !== -1) {
       displace[name].push(elementList[i]);
@@ -692,14 +663,15 @@ sortCss.scope = function (settings, elementList, opt) {
     }
   }
   // Sort
-  for (i = 0, n = opt.sort.length; i < n; i++) {
-    name = opt.sort[i];
-    if (typeof sortCss.list[name] === 'function' && sort[name].length) {
-      sortCss.list[name](settings, sort[name]);
+  for (name in sortCss.list) {
+    if (Array.isArray(displace[name]) && displace[name].length) {
+      sortCss.list[name](settings, displace[name]);
     }
-    if (typeof sortCss.each[name] === 'function' && sort[name].length) {
-      for (x = 0, y = sort[name].length; x < y; x++) {
-        sortCss.each[name](settings, sort[name][x]);
+  }
+  for (name in sortCss.each) {
+    for (var i = 0, n = elementList.length; i < n; i++) {
+      if (elementList[i].scope === name) {
+        sortCss.each[name](settings, elementList[i]);
       }
     }
   }
