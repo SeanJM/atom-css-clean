@@ -126,7 +126,6 @@ capture.scope = function (value) {
     return 'sass if';
   }
   if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
-    console.log(value);
     return 'sass placeholder';
   }
   if (selector.test(value)) {
@@ -267,7 +266,7 @@ capture['sass import'] = function (string, opt) {
   return {
     scope : opt.scope,
     name : m[1],
-    value : m[2].split(',').map(function (a) { return a.trim().replace(/^\'|\'$|^\"|\"$/g, ''); }),
+    value : m[2].split(',').map((a) => a.trim().replace(/^\'|\'$|^\"|\"$/g, '')),
     depth : opt.depth,
     strlen : m[0].length
   };
@@ -598,37 +597,43 @@ cleanCss.fn.value = function (settings, string) {
 };
 
 function sortCss(settings, cssObject) {
-  if (settings.sortMainScope) {
-    sortCss.scope.main(settings, cssObject);
+  function sortDeep(array) {
+    sortCss.scope(settings, array, [
+      'sass function',
+      'sass import',
+      'sass include',
+      'sass include block',
+      'sass mixin',
+      'selector',
+    ]);
+    if (Array.isArray(array.content)) {
+      sortDeep(array.content);
+    }
   }
+  sortCss.scope(settings, cssObject, [
+    'sass import',
+    'sass include block',
+    'sass variable assignment',
+    'sass function',
+    'sass mixin',
+    'sass placeholder',
+    'sass selector'
+  ]);
   if (settings.sortBlockScope) {
-    sortCss.scope.block(settings, cssObject);
+    for (var i = 0, n = cssObject.length; i < n; i++) {
+      if (Array.isArray(cssObject[i].content)) {
+        sortDeep(cssObject[i].content);
+      }
+    }
   }
 }
 
-sortCss.scope = {};
 sortCss.shared = {};
 sortCss.list = {};
 sortCss.each = {};
 
-sortCss.each.selector = function (settings, element) {
-  element.selector.sort(smartSort());
-  sortCss.shared.nested(settings, element);
-};
-
-sortCss.scope.block = function (settings, cssObject) {
-  var name;
-  for (var i = 0, n = cssObject.length; i < n; i++) {
-    name = cssObject[i].scope;
-    if (sortCss.scope.main.list.indexOf(name) === -1 && typeof sortCss.each[name] === 'function') {
-      sortCss.each[name](settings, cssObject[i]);
-    }
-  }
-};
-
-sortCss.scope.main = function (settings, cssObject) {
+sortCss.scope = function (settings, cssObject, sortList) {
   var scope = {};
-  var scopedArray;
   var start = 0;
   var name;
   var i;
@@ -639,17 +644,17 @@ sortCss.scope.main = function (settings, cssObject) {
   while (cssObject[start].scope.substr(0, 7) === 'comment') {
     start += 1;
   }
-  for (var i = 0, n = sortCss.scope.main.list.length; i < n; i++) {
-    scope[sortCss.scope.main.list[i]] = [];
+  for (i = 0, n = sortList.length; i < n; i++) {
+    scope[sortList[i]] = [];
   }
   for (i = cssObject.length - 1; i >= start; i -= 1) {
-    if (sortCss.scope.main.list.indexOf(cssObject[i].scope) !== -1) {
+    if (sortList.indexOf(cssObject[i].scope) !== -1) {
       scope[cssObject[i].scope].push(cssObject[i]);
       cssObject.splice(i, 1);
     }
   }
-  for (i = 0, n = sortCss.scope.main.list.length; i < n; i++) {
-    name = sortCss.scope.main.list[i];
+  for (i = 0, n = sortList.length; i < n; i++) {
+    name = sortList[i];
     if (typeof sortCss.list[name] === 'function') {
       sortCss.list[name](settings, scope[name]);
     }
@@ -665,13 +670,83 @@ sortCss.scope.main = function (settings, cssObject) {
   }
 };
 
-sortCss.scope.main.list = [
-  'sass import',
-  'sass variable assignment',
-  'sass function',
-  'sass mixin',
-  'sass placeholder',
-];
+sortCss.each.selector = function (settings, element) {
+  element.selector.sort(smartSort());
+  sortCss.shared.nested(settings, element);
+};
+
+// sortCss.scope.block = function (settings, cssObject) {
+//   var scope = {};
+//   var start = 0;
+//   var name;
+//   while (cssObject[start].scope.substr(0, 7) === 'comment') {
+//     start += 1;
+//   }
+//   for (var i = 0, n = sortCss.scope.block.list.length; i < n; i++) {
+//     scope[sortCss.scope.block.list[i]] = [];
+//   }
+//   for (i = cssObject.length - 1; i >= start; i -= 1) {
+//     if (sortCss.scope.block.list.indexOf(cssObject[i].scope) !== -1) {
+//       scope[cssObject[i].scope].push(cssObject[i]);
+//       cssObject.splice(i, 1);
+//     }
+//   }
+//   for (var i = 0, n = cssObject.length; i < n; i++) {
+//     name = cssObject[i].scope;
+//     if (sortCss.scope.block.list.indexOf(name) !== -1 && typeof sortCss.list[name] === 'function') {
+//       sortCss.list[name](settings, cssObject[i]);
+//     }
+//     if (sortCss.scope.block.each.indexOf(name) !== -1 && typeof sortCss.each[name] === 'function') {
+//       sortCss.each[name](settings, cssObject[i]);
+//     }
+//   }
+// };
+
+// sortCss.scope.main = function (settings, cssObject) {
+//   var scope = {};
+//   var start = 0;
+//   var name;
+//   var i;
+//   var n;
+//   var x;
+//   var y;
+//   // Determine if a comment is the first element in the array
+//   while (cssObject[start].scope.substr(0, 7) === 'comment') {
+//     start += 1;
+//   }
+//   for (i = 0, n = sortCss.scope.main.list.length; i < n; i++) {
+//     scope[sortCss.scope.main.list[i]] = [];
+//   }
+//   for (i = cssObject.length - 1; i >= start; i -= 1) {
+//     if (sortCss.scope.main.list.indexOf(cssObject[i].scope) !== -1) {
+//       scope[cssObject[i].scope].push(cssObject[i]);
+//       cssObject.splice(i, 1);
+//     }
+//   }
+//   for (i = 0, n = sortCss.scope.main.list.length; i < n; i++) {
+//     name = sortCss.scope.main.list[i];
+//     if (typeof sortCss.list[name] === 'function') {
+//       sortCss.list[name](settings, scope[name]);
+//     }
+//     if (typeof sortCss.each[name] === 'function') {
+//       for (x = 0, y = scope[name].length; x < y; x++) {
+//         sortCss.each[name](settings, scope[name][x]);
+//       }
+//     }
+//     if (scope[name].length) {
+//       [].splice.apply(cssObject, [start, 0].concat(scope[name]));
+//       start += scope[name].length;
+//     }
+//   }
+// };
+//
+// sortCss.scope.main.list = [
+//   'sass import',
+//   'sass variable assignment',
+//   'sass function',
+//   'sass mixin',
+//   'sass placeholder',
+// ];
 
 sortCss.shared.nested = function (settings, element) {
   var alignScope = [0, 1, 2, 3, 4, 5];
@@ -983,14 +1058,21 @@ getValue['sass import'] = function (settings, element, parent) {
   var x = 0;
   var v;
   var alignSpace = '';
-  if (element.align) {
+  if (element.align && element.depth > 0) {
     alignSpace = new Array(element.align - element.name.length + 1).join(' ');
   }
   if (settings.align) {
-    space = `${tab}${alignSpace}${new Array(element.name.length + 1).join(' ')}`;
+    if (element.depth > 0) {
+      space = `${tab}${alignSpace}${new Array(element.name.length + 3).join(' ')}`;
+    } else {
+      space = `${tab}${alignSpace}${new Array(element.name.length + 1).join(' ')}`;
+    }
     element.value = element.value.map(function (a, i) {
       if (i > 0) {
         return `${space}"${a}"`;
+      }
+      if (element.depth > 0 && parent.length > 1) {
+        return `  "${a}"`;
       }
       return `"${a}"`;
     });

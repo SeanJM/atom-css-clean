@@ -1,13 +1,35 @@
 function sortCss(settings, cssObject) {
-  if (settings.sortMainScope) {
-    sortCss.scope.main(settings, cssObject);
+  function sortDeep(array) {
+    sortCss.scope(settings, array, [
+      'sass function',
+      'sass import',
+      'sass include',
+      'sass include block',
+      'sass mixin',
+      'selector',
+    ]);
+    if (Array.isArray(array.content)) {
+      sortDeep(array.content);
+    }
   }
+  sortCss.scope(settings, cssObject, [
+    'sass import',
+    'sass include block',
+    'sass variable assignment',
+    'sass function',
+    'sass mixin',
+    'sass placeholder',
+    'sass selector'
+  ]);
   if (settings.sortBlockScope) {
-    sortCss.scope.block(settings, cssObject);
+    for (var i = 0, n = cssObject.length; i < n; i++) {
+      if (Array.isArray(cssObject[i].content)) {
+        sortDeep(cssObject[i].content);
+      }
+    }
   }
 }
 
-sortCss.scope = {};
 sortCss.shared = {};
 sortCss.list = {};
 sortCss.each = {};
