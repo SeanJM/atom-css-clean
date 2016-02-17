@@ -12,66 +12,12 @@ function capture(string, group, depth) {
     'sass variable assignment',
   ];
   //console.log(string);
-  function getScope(value) {
-    if (value.substr(0, 2) === '//') {
-      return 'comment inline';
-    }
-    if (value.substr(0, 2) === '/*') {
-      return 'comment block';
-    }
-    if (/^\$[^:]+?:[^;]+?;/.test(value)) {
-      return 'sass variable assignment';
-    }
-    if (/^(\*|)[a-z\- ]+:[^;]+?;/.test(value)) {
-      return 'property group';
-    }
-    if (value.substring(0, 7) === '@extend') {
-      return 'sass extend';
-    }
-    if (value.substring(0, 7) === '@import') {
-      return 'sass import';
-    }
-    if (value.substring(0, 8) === '@include') {
-      if (/^@include\s+[^ ]+?\s+\{/.test(value)) {
-        return 'sass include block';
-      }
-      if (/^@include\s+[^ ]+?\(/.test(value)) {
-        return 'sass include arguments';
-      }
-      return 'sass include';
-    }
-    if (value.substring(0, 6) === '@mixin') {
-      return 'sass mixin';
-    }
-    if (value.substring(0, 9) === '@function') {
-      return 'sass function';
-    }
-    if (value.substring(0, 7) === '@return') {
-      return 'sass return';
-    }
-    if (value.substring(0, 3) === '@if') {
-      return 'sass if';
-    }
-    if (value.substring(0, 4) === '@for') {
-      return 'sass for';
-    }
-    if (value.substring(0, 5) === '@each') {
-      return 'sass each';
-    }
-    if (/^@else[ ]+if/.test(value)) {
-      return 'sass if';
-    }
-    if (value.substring(0, 5) === '@else') {
-      return 'sass if';
-    }
-    if (/^([\@\.\%\#\*a-zA-Z0-9\[\]\+\~\=\"\'\_\-\:\&\n,\(\) ]+)/.test(value)) {
-      return 'selector';
-    }
-    return false;
-  }
   string = string.trim();
-  scope = getScope(string);
+  scope = capture.scope(string);
   while (i++ < 1000 && scope) {
+    if (typeof capture[scope] === 'undefined') {
+      throw `Missing '${scope}' method for 'capture' function.`;
+    }
     c = capture[scope](string, {
       group : group,
       depth : depth,
@@ -79,7 +25,7 @@ function capture(string, group, depth) {
     });
     group.push(c);
     string = string.slice(c.strlen).trim();
-    scope = getScope(string);
+    scope = capture.scope(string);
   }
   for (var i = 0, n = group.length; i < n; i++) {
     // untracked scopes & ''@if' starts a new group
@@ -125,6 +71,69 @@ function capture(string, group, depth) {
 }
 
 capture.shared = {};
+
+capture.scope = function (value) {
+  var selector = /^([\@\.\%\#\*a-zA-Z0-9\[\]\+\~\=\"\'\_\-\:\&\n,\(\) ]+)/;
+  if (value.substr(0, 2) === '//') {
+    return 'comment inline';
+  }
+  if (value.substr(0, 2) === '/*') {
+    return 'comment block';
+  }
+  if (/^\$[^:]+?:[^;]+?;/.test(value)) {
+    return 'sass variable assignment';
+  }
+  if (/^(\*|)[a-z\- ]+:[^;]+?;/.test(value)) {
+    return 'property group';
+  }
+  if (value.substring(0, 7) === '@extend') {
+    return 'sass extend';
+  }
+  if (value.substring(0, 7) === '@import') {
+    return 'sass import';
+  }
+  if (value.substring(0, 8) === '@include') {
+    if (/^@include\s+[^ ]+?\s+\{/.test(value)) {
+      return 'sass include block';
+    }
+    if (/^@include\s+[^ ]+?\(/.test(value)) {
+      return 'sass include arguments';
+    }
+    return 'sass include';
+  }
+  if (value.substring(0, 6) === '@mixin') {
+    return 'sass mixin';
+  }
+  if (value.substring(0, 9) === '@function') {
+    return 'sass function';
+  }
+  if (value.substring(0, 7) === '@return') {
+    return 'sass return';
+  }
+  if (value.substring(0, 3) === '@if') {
+    return 'sass if';
+  }
+  if (value.substring(0, 4) === '@for') {
+    return 'sass for';
+  }
+  if (value.substring(0, 5) === '@each') {
+    return 'sass each';
+  }
+  if (/^@else[ ]+if/.test(value)) {
+    return 'sass if';
+  }
+  if (value.substring(0, 5) === '@else') {
+    return 'sass if';
+  }
+  if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
+    console.log(value);
+    return 'sass placeholder';
+  }
+  if (selector.test(value)) {
+    return 'selector';
+  }
+  return false;
+};
 
 capture.selector = function (string, opt) {
   var c = capture.shared.nested(string, opt);
@@ -294,6 +303,8 @@ capture['sass mixin'] = function (string, opt) {
   return o;
 };
 
+capture['sass placeholder'] = capture['selector'];
+
 capture['sass return'] = function (string, opt) {
   var m = string.match(/^(@return)([^;]+?);/);
   return {
@@ -302,17 +313,6 @@ capture['sass return'] = function (string, opt) {
     value : m[2].trim(),
     depth : opt.depth,
     strlen : m[0].length
-  };
-};
-
-capture['sass selector'] = function (string, opt) {
-  var c = capture.shared.nested(string, opt);
-  return {
-    scope : opt.scope,
-    content : c.content,
-    selector : c.arguments.split(',').map(function (a) { return a.trim(); }),
-    depth : opt.depth,
-    strlen : c.strlen
   };
 };
 
@@ -670,6 +670,7 @@ sortCss.scope.main.list = [
   'sass variable assignment',
   'sass function',
   'sass mixin',
+  'sass placeholder',
 ];
 
 sortCss.shared.nested = function (settings, element) {
@@ -1022,6 +1023,8 @@ getValue['sass mixin'] = function (settings, element, parent) {
   }
   return `${s} {\n${v}}`;
 };
+
+getValue['sass placeholder'] = getValue['selector'];
 
 getValue['sass return'] = function (settings, element, parent) {
   return `${element.name} ${element.value};`;

@@ -42,4 +42,5 @@ sortCss.scope.main.list = [
   'sass variable assignment',
   'sass function',
   'sass mixin',
+  'sass placeholder',
 ];
