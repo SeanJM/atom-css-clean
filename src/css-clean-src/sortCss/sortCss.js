@@ -4,8 +4,11 @@ function sortCss(settings, cssObject) {
       'sass function',
       'sass import',
       'sass include',
-      'sass include block',
+      'sass include arguments',
       'sass mixin',
+      'sass include block',
+      'sass extend',
+      'property group',
       'selector',
     ]);
     if (Array.isArray(array.content)) {
@@ -14,12 +17,13 @@ function sortCss(settings, cssObject) {
   }
   sortCss.scope(settings, cssObject, [
     'sass import',
-    'sass include block',
+    'sass include',
     'sass variable assignment',
     'sass function',
     'sass mixin',
+    'sass include block',
     'sass placeholder',
-    'sass selector'
+    'selector'
   ]);
   if (settings.sortBlockScope) {
     for (var i = 0, n = cssObject.length; i < n; i++) {

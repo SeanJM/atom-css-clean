@@ -602,8 +602,11 @@ function sortCss(settings, cssObject) {
       'sass function',
       'sass import',
       'sass include',
-      'sass include block',
+      'sass include arguments',
       'sass mixin',
+      'sass include block',
+      'sass extend',
+      'property group',
       'selector',
     ]);
     if (Array.isArray(array.content)) {
@@ -612,12 +615,13 @@ function sortCss(settings, cssObject) {
   }
   sortCss.scope(settings, cssObject, [
     'sass import',
-    'sass include block',
+    'sass include',
     'sass variable assignment',
     'sass function',
     'sass mixin',
+    'sass include block',
     'sass placeholder',
-    'sass selector'
+    'selector'
   ]);
   if (settings.sortBlockScope) {
     for (var i = 0, n = cssObject.length; i < n; i++) {
@@ -632,7 +636,7 @@ sortCss.shared = {};
 sortCss.list = {};
 sortCss.each = {};
 
-sortCss.scope = function (settings, cssObject, sortList) {
+sortCss.scope = function (settings, elementList, sortList) {
   var scope = {};
   var start = 0;
   var name;
@@ -641,21 +645,21 @@ sortCss.scope = function (settings, cssObject, sortList) {
   var x;
   var y;
   // Determine if a comment is the first element in the array
-  while (cssObject[start].scope.substr(0, 7) === 'comment') {
+  while (elementList[start].scope.substr(0, 7) === 'comment') {
     start += 1;
   }
   for (i = 0, n = sortList.length; i < n; i++) {
     scope[sortList[i]] = [];
   }
-  for (i = cssObject.length - 1; i >= start; i -= 1) {
-    if (sortList.indexOf(cssObject[i].scope) !== -1) {
-      scope[cssObject[i].scope].push(cssObject[i]);
-      cssObject.splice(i, 1);
+  for (i = elementList.length - 1; i >= start; i--) {
+    if (sortList.indexOf(elementList[i].scope) !== -1) {
+      scope[elementList[i].scope].push(elementList[i]);
+      elementList.splice(i, 1);
     }
   }
   for (i = 0, n = sortList.length; i < n; i++) {
     name = sortList[i];
-    if (typeof sortCss.list[name] === 'function') {
+    if (typeof sortCss.list[name] === 'function' && scope[name].length) {
       sortCss.list[name](settings, scope[name]);
     }
     if (typeof sortCss.each[name] === 'function') {
@@ -664,7 +668,7 @@ sortCss.scope = function (settings, cssObject, sortList) {
       }
     }
     if (scope[name].length) {
-      [].splice.apply(cssObject, [start, 0].concat(scope[name]));
+      [].splice.apply(elementList, [start, 0].concat(scope[name]));
       start += scope[name].length;
     }
   }
@@ -672,7 +676,6 @@ sortCss.scope = function (settings, cssObject, sortList) {
 
 sortCss.each.selector = function (settings, element) {
   element.selector.sort(smartSort());
-  sortCss.shared.nested(settings, element);
 };
 
 // sortCss.scope.block = function (settings, cssObject) {
@@ -748,60 +751,8 @@ sortCss.each.selector = function (settings, element) {
 //   'sass placeholder',
 // ];
 
-sortCss.shared.nested = function (settings, element) {
-  var alignScope = [0, 1, 2, 3, 4, 5];
-  var scopeGroup = {};
-  var start = 0;
-  var t;
-  var containNest = [
-    'sass function',
-    'sass if',
-    'sass include block',
-    'sass mixin',
-    'selector',
-  ];
-  // Increase the start position as long as there are comments
-  while (element.content[start].scope.substr(0, 7) === 'comment') {
-    start += 1;
-  }
-  // Fill the scopeGroup collection
-  for (var i = 0, n = settings.blockScopeOrder.length; i < n; i++) {
-    scopeGroup[settings.blockScopeOrder[i]] = [];
-  }
-  for (var i = element.content.length - 1; i >= start; i--) {
-    // The content scope that we are looping through exists inside 'scopeGroup'
-    if (Array.isArray(scopeGroup[element.content[i].scope])) {
-      if (typeof sortCss.each[element.content[i].scope] === 'function') {
-        sortCss.each[element.content[i].scope](settings, element.content[i]);
-      }
-      if (containNest.indexOf(element.content[i].scope) !== -1) {
-        sortCss.shared.nested(settings, element.content[i]);
-      }
-      //console.log(element.content[i]);
-      scopeGroup[element.content[i].scope].push(element.content[i]);
-      element.content.splice(i, 1);
-    }
-  }
-  // Iterate through the scopeGroup
-  for (var name in scopeGroup) {
-    if (typeof sortCss.list[name] === 'function' && scopeGroup[name].length) {
-      sortCss.list[name](settings, scopeGroup[name]);
-    }
-    [].splice.apply(element.content, [start, 0].concat(scopeGroup[name]));
-    start += scopeGroup[name].length;
-  }
-};
-
-sortCss.each['sass function'] = function (settings, element) {
-  sortCss.shared.nested(settings, element);
-};
-
 sortCss.each['sass import'] = function (settings, element) {
   element.value.sort(smartSort());
-};
-
-sortCss.each['sass mixin'] = function (settings, element) {
-  sortCss.shared.nested(settings, element);
 };
 
 sortCss.list['property group'] = function (settings, list) {
@@ -836,12 +787,12 @@ sortCss.list['sass import'] = function (settings, list) {
   }
 };
 
-sortCss.list['sass mixin'] = function (settings, list) {
+sortCss.list['sass include'] = function (settings, list) {
   list.sort(smartSort('value'));
 };
 
-sortCss.each['sass include block'] = function (settings, element) {
-  sortCss.shared.nested(settings, element);
+sortCss.list['sass mixin'] = function (settings, list) {
+  list.sort(smartSort('value'));
 };
 
 sortCss.list['sass variable assignment'] = function (settings, list) {
