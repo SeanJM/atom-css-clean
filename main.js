@@ -125,6 +125,9 @@ capture.scope = function (value) {
   if (value.substring(0, 5) === '@else') {
     return 'sass if';
   }
+  if (value.substring(0, 10) === '@font-face') {
+    return 'font face';
+  }
   if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
     return 'sass placeholder';
   }
@@ -178,12 +181,23 @@ capture['comment inline'] = function (string, opt) {
   };
 };
 
+capture['font face'] = function (string, opt) {
+  var c = capture.shared.nested(string, opt);
+  return {
+    scope : opt.scope,
+    content : c.content,
+    selector : c.arguments.split(',').map(function (a) { return a.trim(); }),
+    depth : opt.depth,
+    strlen : c.strlen
+  };
+};
+
 capture['property group'] = function (string, opt) {
   var m = string.match(/([^:]+?):([^;]+?);/);
   return {
     scope : opt.scope,
     name : m[1].trim(),
-    value : m[2].trim(),
+    value : m[2].trim().replace(/\n/g, ''),
     depth : opt.depth,
     strlen : m[0].length
   };
@@ -624,6 +638,7 @@ function sortCss(settings, cssObject) {
       'sass mixin',
       'sass include block',
       'sass placeholder',
+      'font face',
     ]
   });
   if (settings.sortBlockScope) {
@@ -821,60 +836,56 @@ getValue['comment inline'] = function (settings, element, parent) {
   return tab + '// ' + element.value;
 };
 
+getValue['font face'] = function (settings, element, parent) {
+  var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
+  var selector = element.selector.join(',\n');
+  var v = getValue.shared.nested(settings, element, parent);
+  return `${selector} {\n${v}${tab}}`;
+};
+
 getValue['property group'] = function (settings, element, parent) {
+  var value = splitByComma(element.value);
+  var commas = lasso.indexesOf(element.value, ',');
+  var captures;
+  var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
   if (element.align) {
-    return element.name + new Array(element.align - element.name.length + 2).join(' ') + ': ' + element.value + ';';
+    value = value.map(function (a, i) {
+      var align = new Array(element.align + 4).join(' ');
+      if (i === 0) {
+        return a;
+      }
+      return tab + align + a;
+    }).join(',\n');
+    return element.name + new Array(element.align - element.name.length + 2).join(' ') + ': ' + value + ';';
   }
   return element.name + ': ' + element.value + ';';
 };
 
 getValue['sass each'] = function (settings, element, parent) {
   var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  var s = `${element.name} ${element.value}`;
-  var v = getValue.shared.nested(settings, element, parent);
-  var sublist = lasso.between(element.value, '(', ')');
-  var commas = lasso.indexesOf(element.value, ',');
-  var lines = [''];
-  var index = 0;
-  if (sublist.length) {
-    commas = commas.filter(function (comma) {
-      for (var i = 0, n = sublist.length; i < n; i++) {
-        if (comma.index > sublist[i].index && comma.index < sublist[i].index + sublist[i].length) {
-          return false;
-        }
-      }
-      return comma.index > sublist.slice(-1)[0].index;
-    }).map((a) => a.index);
-    for (var i = 0, n = element.value.length; i < n; i++) {
-      if (commas.indexOf(i) !== -1) {
-        index += 1;
-        lines[index] = '';
+  var nested = getValue.shared.nested(settings, element, parent);
+  var value = splitByComma(element.value);
+  var each;
+  if (settings.align) {
+    for (var i = 0, n = value.length; i < n; i++) {
+      if (i === 0) {
+        value[i] = element.name + ' ' + value[i];
       } else {
-        lines[index] += element.value[i];
+        value[i] = tab + new Array(value[0].substr(0, value[0].indexOf('(')).length + 1).join(' ') + value[i];
       }
     }
-    lines = lines.map((a) => a.trim());
-    if (settings.align) {
-      for (var i = 0, n = lines.length; i < n; i++) {
-        if (i === 0) {
-          lines[i] = element.name + ' ' + lines[i];
-        } else {
-          lines[i] = tab + new Array(lines[0].substr(0, lines[0].indexOf('(')).length + 1).join(' ') + lines[i];
-        }
+    each = value.join(', \n');
+  } else {
+    for (var i = 0, n = value.length; i < n; i++) {
+      if (i === 0) {
+        value[i] = element.name + ' ' + value[i];
+      } else {
+        value[i] = tab + value[i];
       }
-      s = lines.join(', \n');
-    } else {
-      for (var i = 0, n = lines.length; i < n; i++) {
-        if (i === 0) {
-          lines[i] = element.name + ' ' + lines[i];
-        } else {
-          lines[i] = tab + lines[i];
-        }
-      }
-      s = lines.join(', \n');
     }
+    each = value.join(',\n');
   }
-  return `${s} {\n${v}${tab}}`;
+  return `${each} {\n${nested}${tab}}`;
 };
 
 getValue['sass extend'] = function (settings, element, parent) {
@@ -1114,6 +1125,33 @@ function smartSort(property) {
     }
     return 0;
   }
+};
+
+function splitByComma (value) {
+  var sublist = lasso.between(value, '(', ')');
+  var commas = lasso.indexesOf(value, ',');
+  var lines = [''];
+  var index = 0;
+  if (sublist.length) {
+    commas = commas.filter(function (comma) {
+      for (var i = 0, n = sublist.length; i < n; i++) {
+        if (comma.index > sublist[i].index && comma.index < sublist[i].index + sublist[i].length) {
+          return false;
+        }
+      }
+      return comma.index > sublist.slice(-1)[0].index;
+    }).map((a) => a.index);
+    for (var i = 0, n = value.length; i < n; i++) {
+      if (commas.indexOf(i) !== -1) {
+        index += 1;
+        lines[index] = '';
+      } else {
+        lines[index] += value[i];
+      }
+    }
+    return lines.map((a) => a.trim());
+  }
+  return value.split(',').map((a) => a.trim());
 };
 
 /*! lasso-string 2016-02-14 */
