@@ -1,29 +1,54 @@
 function sortCss(settings, cssObject) {
   function sortDeep(array) {
-    sortCss.scope(settings, array, [
-      'sass function',
-      'sass import',
-      'sass include',
-      'sass include arguments',
-      'sass mixin',
-      'sass include block',
-      'sass extend',
-      'property group',
-      'selector',
-    ]);
+    sortCss.scope(settings, array, {
+      displace : [
+        'sass function',
+        'sass import',
+        'sass include',
+        'sass include arguments',
+        'sass mixin',
+        'sass include block',
+        'sass extend',
+        'property group',
+        'selector',
+      ],
+      sort : [
+        'sass function',
+        'sass import',
+        'sass include',
+        'sass include arguments',
+        'sass mixin',
+        'sass include block',
+        'sass extend',
+        'property group',
+        'selector',
+      ]
+    });
     if (Array.isArray(array.content)) {
       sortDeep(array.content);
     }
   }
-  sortCss.scope(settings, cssObject, [
-    'sass import',
-    'sass include',
-    'sass variable assignment',
-    'sass function',
-    'sass mixin',
-    'sass include block',
-    'sass placeholder',
-  ]);
+  sortCss.scope(settings, cssObject, {
+    displace : [
+      'sass import',
+      'sass include',
+      'sass variable assignment',
+      'sass function',
+      'sass mixin',
+      'sass include block',
+      'sass placeholder',
+    ],
+    sort : [
+      'sass import',
+      'sass include',
+      'sass variable assignment',
+      'sass function',
+      'sass mixin',
+      'sass include block',
+      'sass placeholder',
+      'selector'
+    ]
+  });
   if (settings.sortBlockScope) {
     for (var i = 0, n = cssObject.length; i < n; i++) {
       if (Array.isArray(cssObject[i].content)) {
