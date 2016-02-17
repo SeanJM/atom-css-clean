@@ -1,6 +1,5 @@
 sortCss.scope.main = function (settings, cssObject) {
   var scope = {};
-  var scopedArray;
   var start = 0;
   var name;
   var i;
@@ -11,7 +10,7 @@ sortCss.scope.main = function (settings, cssObject) {
   while (cssObject[start].scope.substr(0, 7) === 'comment') {
     start += 1;
   }
-  for (var i = 0, n = sortCss.scope.main.list.length; i < n; i++) {
+  for (i = 0, n = sortCss.scope.main.list.length; i < n; i++) {
     scope[sortCss.scope.main.list[i]] = [];
   }
   for (i = cssObject.length - 1; i >= start; i -= 1) {
