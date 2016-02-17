@@ -37,6 +37,5 @@ function sortCss(settings, cssObject) {
   }
 }
 
-sortCss.shared = {};
 sortCss.list = {};
 sortCss.each = {};
