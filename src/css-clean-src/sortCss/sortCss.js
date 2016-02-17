@@ -26,6 +26,7 @@ function sortCss(settings, cssObject) {
       'sass mixin',
       'sass include block',
       'sass placeholder',
+      'font face',
     ]
   });
   if (settings.sortBlockScope) {

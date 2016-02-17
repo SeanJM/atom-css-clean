@@ -51,6 +51,9 @@ capture.scope = function (value) {
   if (value.substring(0, 5) === '@else') {
     return 'sass if';
   }
+  if (value.substring(0, 10) === '@font-face') {
+    return 'font face';
+  }
   if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
     return 'sass placeholder';
   }
