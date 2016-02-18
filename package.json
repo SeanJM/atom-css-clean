@@ -3,7 +3,15 @@
   "main": "main.js",
   "version": "2.1.81",
   "description": "A package for sorting and aligning CSS and SASS.",
-  "keywords": [],
+  "keywords": [
+    "css",
+    "prettify",
+    "pretty print",
+    "SASS",
+    "sorting",
+    "sort",
+    "alignment"
+  ],
   "activationCommands": {
     "atom-workspace": "css-clean:convert"
   },
