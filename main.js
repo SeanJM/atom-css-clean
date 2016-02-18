@@ -713,6 +713,9 @@ sortCss.list['property group'] = function (settings, list) {
   list.sort(function (a, b) {
     var ai = order.indexOf(a.name);
     var bi = order.indexOf(b.name);
+    if (a.name === b.name && typeof sortCss.list['property group'][a.name] === 'function') {
+      return sortCss.list['property group'][a.name](a, b);
+    }
     if (ai > -1 && bi > -1) {
       return ai - bi;
     }
@@ -748,6 +751,27 @@ sortCss.list['sass mixin'] = function (settings, list) {
   list.sort(smartSort('value'));
 };
 
+sortCss.list['property group']['background'] = function (a, b) {
+  if (/\(/.test(a.value) && !/\(/.test(b.value)) {
+    return 1;
+  } else if (/\(/.test(a.value) && /\(/.test(b.value)) {
+    if (a.value > b.value) {
+      return 1;
+    }
+    return -1;
+  }
+  return -1;
+};
+
+sortCss.list['property group']['src'] = function (a, b) {
+  var av = splitByComma(a.value);
+  var bv = splitByComma(b.value);
+  if (av.length > bv.length) {
+    return 1;
+  }
+  return -1;
+};
+
 sortCss.list['sass variable assignment'] = function (settings, list) {
   list.sort(smartSort('name'));
   for (var i = 0, n = list.length; i < n; i++) {
@@ -756,6 +780,8 @@ sortCss.list['sass variable assignment'] = function (settings, list) {
     list[i].last = i === n - 1;
   }
 };
+
+sortCss.list['property group']['background-color'] = sortCss.list['property group']['background'];
 
 function getValue(settings, cssObject) {
   return getValue.map(settings, cssObject).map(function (value, i) {

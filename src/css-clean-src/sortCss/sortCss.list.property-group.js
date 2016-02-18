@@ -3,6 +3,9 @@ sortCss.list['property group'] = function (settings, list) {
   list.sort(function (a, b) {
     var ai = order.indexOf(a.name);
     var bi = order.indexOf(b.name);
+    if (a.name === b.name && typeof sortCss.list['property group'][a.name] === 'function') {
+      return sortCss.list['property group'][a.name](a, b);
+    }
     if (ai > -1 && bi > -1) {
       return ai - bi;
     }
