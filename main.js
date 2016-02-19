@@ -131,6 +131,9 @@ capture.scope = function (value) {
   if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
     return 'sass placeholder';
   }
+  if (value.substring(0, 6) === '@media') {
+    return 'media query';
+  }
   if (selector.test(value)) {
     return 'selector';
   }
@@ -187,6 +190,21 @@ capture['font face'] = function (string, opt) {
     scope : opt.scope,
     content : c.content,
     selector : c.arguments.split(',').map(function (a) { return a.trim(); }),
+    depth : opt.depth,
+    strlen : c.strlen
+  };
+};
+
+capture['media query'] = function (string, opt) {
+  var c = capture.shared.nested(string, opt);
+  var m = c.arguments.split(' ');
+  var name = m[0];
+  var value = m.slice(1).join(' ');
+  return {
+    scope : opt.scope,
+    content : c.content,
+    name : name,
+    value : splitByComma(value),
     depth : opt.depth,
     strlen : c.strlen
   };
@@ -871,6 +889,14 @@ getValue['font face'] = function (settings, element, parent) {
   return `${selector} {\n${v}${tab}}`;
 };
 
+getValue['media query'] = function (settings, element, parent) {
+  var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
+  var align = new Array(element.name.length + 2).join(' ');
+  var value = element.value.map((a, i) => i > 0 ? `${tab}${align}${a}` : a).join(',\n');
+  var nested = getValue.shared.nested(settings, element, parent);
+  return `${element.name} ${value} {\n${nested}${tab}}`;
+};
+
 getValue['property group'] = function (settings, element, parent) {
   var value = splitByComma(element.value);
   var commas = lasso.indexesOf(element.value, ',');
@@ -1134,9 +1160,6 @@ function smartSort(property) {
   	var aa = lasso.matchType(a);
     var bb = lasso.matchType(b);
     var n = aa.length;
-    if (a[0] === '@') {
-      return -1;
-    }
     if (aa.length > bb.length) {
     	n = bb.length;
     }

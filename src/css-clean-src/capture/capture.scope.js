@@ -57,6 +57,9 @@ capture.scope = function (value) {
   if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
     return 'sass placeholder';
   }
+  if (value.substring(0, 6) === '@media') {
+    return 'media query';
+  }
   if (selector.test(value)) {
     return 'selector';
   }

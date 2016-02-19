@@ -9,9 +9,6 @@ function smartSort(property) {
   	var aa = lasso.matchType(a);
     var bb = lasso.matchType(b);
     var n = aa.length;
-    if (a[0] === '@') {
-      return -1;
-    }
     if (aa.length > bb.length) {
     	n = bb.length;
     }
