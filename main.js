@@ -636,11 +636,11 @@ function sortCss(settings, cssObject) {
       'sass import',
       'sass include',
       'sass variable assignment',
+      'font face',
       'sass function',
       'sass mixin',
       'sass include block',
       'sass placeholder',
-      'font face',
     ]
   });
   if (settings.sortBlockScope) {
