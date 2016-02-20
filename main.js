@@ -640,7 +640,6 @@ function sortCss(settings, cssObject) {
         'sass include block',
         'sass extend',
         'property group',
-        'selector',
       ]
     });
     for (var i = 0, n = array.length; i < n; i++) {
