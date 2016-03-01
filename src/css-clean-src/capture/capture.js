@@ -2,6 +2,7 @@ function capture(string, group, depth) {
   var scope;
   var i = 0;
   var c;
+  var stackOverFlowIntMax = 10000;
   var scopeCount = {};
   var alignTogether = [
     'property group',
@@ -14,7 +15,7 @@ function capture(string, group, depth) {
   //console.log(string);
   string = string.trim();
   scope = capture.scope(string);
-  while (i++ < 1000 && scope) {
+  while (i++ < stackOverFlowIntMax && scope) {
     if (typeof capture[scope] === 'undefined') {
       throw `Missing '${scope}' method for 'capture' function.`;
     }
@@ -27,7 +28,10 @@ function capture(string, group, depth) {
     string = string.slice(c.strlen).trim();
     scope = capture.scope(string);
   }
-  for (var i = 0, n = group.length; i < n; i++) {
+  if (i === stackOverFlowIntMax) {
+    throw 'CSS Clean has stopped: There must be a problem with your CSS.';
+  }
+  for (i = 0, n = group.length; i < n; i++) {
     // untracked scopes & ''@if' starts a new group
     if (typeof scopeCount[group[i].scope] === 'undefined' || group[i].name === '@if') {
       scopeCount[group[i].scope] = {
