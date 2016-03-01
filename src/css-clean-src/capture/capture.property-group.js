@@ -1,10 +1,17 @@
 capture['property group'] = function (string, opt) {
-  var m = string.match(/([^:]+?):([^;]+?);/);
+  var i = 0;
+  var m;
+  var n = string.length;
+  while (string[i] !== ';' && i < n) {
+    i++;
+  }
+  m = string.substr(0, i).split(':').map(a => a.trim());
+  m[1] = m[1].replace(/\n/g, '').replace(/;$/, '');
   return {
     scope : opt.scope,
-    name : m[1].trim(),
-    value : m[2].trim().replace(/\n/g, ''),
+    name : m[0],
+    value : m[1],
     depth : opt.depth,
-    strlen : m[0].length
+    strlen : i + 1
   };
 };
