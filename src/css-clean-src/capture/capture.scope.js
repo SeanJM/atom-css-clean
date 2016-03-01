@@ -9,7 +9,7 @@ capture.scope = function (value) {
   if (/^\$[^:]+?:[^;]+?;/.test(value)) {
     return 'sass variable assignment';
   }
-  if (/^(\*|)[a-z\- ]+:[^;]+?;/.test(value)) {
+  if (/^(\*|)[a-z\- ]+:/.test(value) && list.properties.indexOf(value.split(':')[0].trim()) > -1) {
     return 'property group';
   }
   if (value.substring(0, 7) === '@extend') {
