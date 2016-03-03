@@ -12,7 +12,6 @@ function capture(string, group, depth) {
     'sass extend',
     'sass variable assignment',
   ];
-  //console.log(string);
   string = string.trim();
   scope = capture.scope(string);
   while (i++ < stackOverFlowIntMax && scope) {
@@ -97,10 +96,10 @@ capture.scope = function (value) {
     return 'sass import';
   }
   if (value.substring(0, 8) === '@include') {
-    if (/^@include\s+[^ ]+?\s+\{/.test(value)) {
+    if (/^@include\s+[a-zA-Z0-9\-\_\s]+\{/.test(value)) {
       return 'sass include block';
     }
-    if (/^@include\s+[^ ]+?\(/.test(value)) {
+    if (/^@include\s+[a-zA-Z0-9\-\_\s]+\(/.test(value)) {
       return 'sass include arguments';
     }
     return 'sass include';
@@ -510,7 +509,7 @@ var list = {};
     'icon',
     'display',
     '*display',
-    'box-sizing',
+    '-prefix-box-sizing',
     'visibility',
     '-prefix-appearance',
     'zoom',
@@ -562,11 +561,11 @@ var list = {};
     'border-left-color',
     'border-width',
     'border-style',
-    'border-radius',
-    'border-top-left-radius',
-    'border-top-right-radius',
-    'border-bottom-right-radius',
-    'border-bottom-left-radius',
+    '-prefix-border-radius',
+    '-prefix-border-top-left-radius',
+    '-prefix-border-top-right-radius',
+    '-prefix-border-bottom-right-radius',
+    '-prefix-border-bottom-left-radius',
     'border-top-width',
     'border-top-style',
     'border-right-width',
@@ -580,7 +579,7 @@ var list = {};
     'background',
     'background-image',
     'background-color',
-    'background-blend-mode',
+    '-prefix-background-blend-mode',
     'background-repeat',
     'background-attachment',
     'background-origin',
@@ -665,16 +664,16 @@ var list = {};
     'list-style-type',
     'counter-increment',
     'counter-reset',
-    '@keyframes',
-    'animation',
-    'animation-delay',
-    'animation-direction',
-    'animation-duration',
-    'animation-fill-mode',
-    'animation-iteration-count',
-    'animation-name',
-    'animation-play-state',
-    'animation-timing-function',
+    '@-prefix-keyframes',
+    '-prefix-animation',
+    '-prefix-animation-delay',
+    '-prefix-animation-direction',
+    '-prefix-animation-duration',
+    '-prefix-animation-fill-mode',
+    '-prefix-animation-iteration-count',
+    '-prefix-animation-name',
+    '-prefix-animation-play-state',
+    '-prefix-animation-timing-function',
     'backface-visibility',
     'perspective',
     'perspective-origin',
@@ -1215,7 +1214,12 @@ getValue.shared.nested = function (settings, element, parent) {
 
 getValue['sass include arguments'] = function (settings, element, parent) {
   var args = '(' + element.arguments.join(', ') + ')';
-  var align = new Array(element.align - element.name.length + 4).join(' ');
+  var align;
+  if (element.depth === 0) {
+    align = new Array(element.align - element.name.length + 2).join(' ');
+  } else {
+    align = new Array(element.align - element.name.length + 4).join(' ');
+  }
   if (element.align && parent.length > 1) {
     return `${element.name}${align}${element.value}${args};`;
   }

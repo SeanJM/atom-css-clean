@@ -19,10 +19,10 @@ capture.scope = function (value) {
     return 'sass import';
   }
   if (value.substring(0, 8) === '@include') {
-    if (/^@include\s+[^ ]+?\s+\{/.test(value)) {
+    if (/^@include\s+[a-zA-Z0-9\-\_\s]+\{/.test(value)) {
       return 'sass include block';
     }
-    if (/^@include\s+[^ ]+?\(/.test(value)) {
+    if (/^@include\s+[a-zA-Z0-9\-\_\s]+\(/.test(value)) {
       return 'sass include arguments';
     }
     return 'sass include';

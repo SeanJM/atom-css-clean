@@ -12,7 +12,6 @@ function capture(string, group, depth) {
     'sass extend',
     'sass variable assignment',
   ];
-  //console.log(string);
   string = string.trim();
   scope = capture.scope(string);
   while (i++ < stackOverFlowIntMax && scope) {
