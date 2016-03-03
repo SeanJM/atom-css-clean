@@ -1,5 +1,4 @@
 capture.scope = function (value) {
-  var selector = /^([\@\.\%\#\*a-zA-Z0-9\[\]\+\~\=\"\'\_\-\:\&\n,\(\) ]+)/;
   if (value.substr(0, 2) === '//') {
     return 'comment inline';
   }
@@ -8,9 +7,6 @@ capture.scope = function (value) {
   }
   if (/^\$[^:]+?:[^;]+?;/.test(value)) {
     return 'sass variable assignment';
-  }
-  if (/^(\*|)[a-z\- ]+:/.test(value) && list.properties.indexOf(value.split(':')[0].trim()) > -1) {
-    return 'property group';
   }
   if (value.substring(0, 7) === '@extend') {
     return 'sass extend';
@@ -54,14 +50,18 @@ capture.scope = function (value) {
   if (value.substring(0, 10) === '@font-face') {
     return 'font face';
   }
-  if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
+  if (is.selector(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
     return 'sass placeholder';
   }
   if (value.substring(0, 6) === '@media') {
     return 'media query';
   }
-  if (selector.test(value)) {
+  if (is.propertyGroup(value)) {
+    return 'property group';
+  }
+  if (is.selector(value)) {
     return 'selector';
   }
+  // In the future return 'unknown'
   return false;
 };

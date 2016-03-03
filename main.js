@@ -76,7 +76,6 @@ function capture(string, group, depth) {
 capture.shared = {};
 
 capture.scope = function (value) {
-  var selector = /^([\@\.\%\#\*a-zA-Z0-9\[\]\+\~\=\"\'\_\-\:\&\n,\(\) ]+)/;
   if (value.substr(0, 2) === '//') {
     return 'comment inline';
   }
@@ -85,9 +84,6 @@ capture.scope = function (value) {
   }
   if (/^\$[^:]+?:[^;]+?;/.test(value)) {
     return 'sass variable assignment';
-  }
-  if (/^(\*|)[a-z\- ]+:/.test(value) && list.properties.indexOf(value.split(':')[0].trim()) > -1) {
-    return 'property group';
   }
   if (value.substring(0, 7) === '@extend') {
     return 'sass extend';
@@ -131,15 +127,19 @@ capture.scope = function (value) {
   if (value.substring(0, 10) === '@font-face') {
     return 'font face';
   }
-  if (selector.test(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
+  if (is.selector(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
     return 'sass placeholder';
   }
   if (value.substring(0, 6) === '@media') {
     return 'media query';
   }
-  if (selector.test(value)) {
+  if (is.propertyGroup(value)) {
+    return 'property group';
+  }
+  if (is.selector(value)) {
     return 'selector';
   }
+  // In the future return 'unknown'
   return false;
 };
 
@@ -486,6 +486,36 @@ cleanCss.fn.value = function (settings, string) {
   var cssObject = capture(string, [], 0);
   sortCss(settings, cssObject);
   return getValue(settings, cssObject);
+};
+
+var is = {};
+
+is.propertyGroup = function (value) {
+  var startsWith = /^(\*|)[a-z\- ]+:/.test(value);
+  var property = value.split(':')[0].trim();
+  var inIndexed = list.properties.indexOf(property) > -1;
+  var braceBeforeSemiColon = false;
+  var n = value.length;
+  var i;
+  if (startsWith && inIndexed) {
+    return true;
+  }
+  while (value[i] !== ';' && i < n) {
+    // Protect is from mismatching SASS eval
+    if (value[i] === '{' && value[i - 1] !== '#') {
+      return false;
+    }
+    i++;
+  }
+  return value[i] === ';';
+};
+
+is.selector = function (value) {
+  var selector = /^([\@\.\%\#\*a-zA-Z0-9\[\]\+\~\=\"\'\_\-\:\&\n,\(\) ]+)/.test(value);
+  var braceIndex = value.indexOf('{');
+  var semiIndex = value.indexOf(';');
+  var braceBefore = semiIndex > braceIndex && braceIndex !== -1 || semiIndex === -1;
+  return selector && braceBefore;
 };
 
 var list = {};
