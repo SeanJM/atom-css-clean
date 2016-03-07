@@ -221,7 +221,7 @@ capture['property group'] = function (string, opt) {
     i++;
   }
   m = string.substr(0, i).split(':').map(a => a.trim());
-  m[1] = m[1].replace(/\n/g, '').replace(/;$/, '');
+  m[1] = m.slice(1).join(':').replace(/\n/g, '').replace(/;$/, '');
   return {
     scope : opt.scope,
     name : m[0],
