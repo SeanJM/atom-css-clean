@@ -134,6 +134,7 @@
     'font-weight',
     'font-kerning',
     'font-stretch',
+    '-prefix-font-smoothing',
     'font-synthesis',
     'font-variant',
     'font-variant-alternates',
