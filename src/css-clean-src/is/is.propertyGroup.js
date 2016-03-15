@@ -5,9 +5,11 @@ is.propertyGroup = function (value) {
   var braceBeforeSemiColon = false;
   var n = value.length;
   var i;
+
   if (startsWith && inIndexed) {
     return true;
   }
+
   while (value[i] !== ';' && i < n) {
     // Protect is from mismatching SASS eval
     if (value[i] === '{' && value[i - 1] !== '#') {

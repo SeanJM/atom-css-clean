@@ -1,6 +1,7 @@
 function capture(string, group, depth) {
   var scope;
   var i = 0;
+  var n;
   var c;
   var stackOverFlowIntMax = 10000;
   var scopeCount = {};
@@ -12,24 +13,30 @@ function capture(string, group, depth) {
     'sass extend',
     'sass variable assignment',
   ];
+
   string = string.trim();
   scope = capture.scope(string);
+
   while (i++ < stackOverFlowIntMax && scope) {
     if (typeof capture[scope] === 'undefined') {
-      throw `Missing '${scope}' method for 'capture' function.`;
+      throw 'Missing \'' + scope + '\' method for \'capture\' function.';
     }
+
     c = capture[scope](string, {
       group : group,
       depth : depth,
       scope : scope
     });
+
     group.push(c);
     string = string.slice(c.strlen).trim();
     scope = capture.scope(string);
   }
+
   if (i === stackOverFlowIntMax) {
     throw 'CSS Clean has stopped: There must be a problem with your CSS.';
   }
+
   for (i = 0, n = group.length; i < n; i++) {
     // untracked scopes & ''@if' starts a new group
     if (typeof scopeCount[group[i].scope] === 'undefined' || group[i].name === '@if') {
@@ -48,23 +55,24 @@ function capture(string, group, depth) {
     group[i].index = i;
     group[i].length = n;
   }
-  for (var i = 0, n = group.length; i < n; i++) {
+
+  for (i = 0, n = group.length; i < n; i++) {
     group[i].groupLength = scopeCount[group[i].scope].groupLength;
     group[i].last = group[i].groupIndex === group[i].groupLength - 1;
   }
   if (depth === 0) {
-    for (var i = 0, n = group.length; i < n; i++) {
+    for (i = 0, n = group.length; i < n; i++) {
       group[i].align = scopeCount[group[i].scope].align;
     }
   } else {
     // Get alignments
     alignTogether.align = 0;
-    for (var i = 0, n = alignTogether.length; i < n; i++) {
+    for (i = 0, n = alignTogether.length; i < n; i++) {
       if (scopeCount[alignTogether[i]] && scopeCount[alignTogether[i]].align > alignTogether.align) {
         alignTogether.align = scopeCount[alignTogether[i]].align;
       }
     }
-    for (var i = 0, n = group.length; i < n; i++) {
+    for (i = 0, n = group.length; i < n; i++) {
       if (alignTogether.indexOf(group[i].scope) !== -1) {
         group[i].align = alignTogether.align;
       }
@@ -364,21 +372,26 @@ capture.shared.nested = function (string, opt) {
   var o;
   var c;
   var v;
+
   while (args.slice(1) !== '{' && args[0] === '#' || args === '#{' || args.slice(1) !== '{') {
     i += 1;
     args = string.substr(i, 2);
   }
+
   args = string.substr(0, i);
   start = args.length;
   o = string.substr(start, i).match(/\{/g) || [];
   c = string.substr(start, i).match(/\}/g) || [];
   i = 0;
-  while (true) {
+
+  while (i < string.length) {
     i += 1;
     o = string.substr(start, i).match(/\{/g) || [];
     c = string.substr(start, i).match(/\}/g) || [];
+
     if (o.length > 0 && o.length === c.length) {
       v = lasso.between(string.substr(start, i), '{', '}').slice(-1)[0];
+
       return {
         scope : opt.scope,
         content : capture(v.value.trim(), [], opt.depth + 1),
@@ -386,10 +399,9 @@ capture.shared.nested = function (string, opt) {
         depth : opt.depth,
         strlen : args.length + v.capture.index + v.capture.length,
       };
+
     }
-    if (i === 10000) {
-      throw 'There is an error with your CSS on this match: ' + string;
-    }
+
   }
 };
 
@@ -497,9 +509,11 @@ is.propertyGroup = function (value) {
   var braceBeforeSemiColon = false;
   var n = value.length;
   var i;
+
   if (startsWith && inIndexed) {
     return true;
   }
+
   while (value[i] !== ';' && i < n) {
     // Protect is from mismatching SASS eval
     if (value[i] === '{' && value[i - 1] !== '#') {
@@ -514,7 +528,8 @@ is.selector = function (value) {
   var selector = /^([\@\.\%\#\*a-zA-Z0-9\[\]\+\~\=\"\'\_\-\:\&\n,\(\) ]+)/.test(value);
   var braceIndex = value.indexOf('{');
   var semiIndex = value.indexOf(';');
-  var braceBefore = semiIndex > braceIndex && braceIndex !== -1 || semiIndex === -1;
+  var braceBefore = semiIndex > braceIndex && braceIndex !== -1 || semiIndex === -1 && braceIndex !== -1;
+
   return selector && braceBefore;
 };
 
@@ -830,9 +845,11 @@ sortCss.scope = function (settings, elementList, opt) {
   while (elementList[start].scope.substr(0, 7) === 'comment') {
     start += 1;
   }
+
   for (i = 0, n = opt.displace.length; i < n; i++) {
     displace[opt.displace[i]] = [];
   }
+
   for (i = elementList.length - 1; i >= start; i--) {
     name = elementList[i].scope;
     // Add to displace list
@@ -841,19 +858,22 @@ sortCss.scope = function (settings, elementList, opt) {
       elementList.splice(i, 1);
     }
   }
+
   // Sort
   for (name in sortCss.list) {
     if (Array.isArray(displace[name]) && displace[name].length) {
       sortCss.list[name](settings, displace[name]);
     }
   }
+
   for (name in sortCss.each) {
-    for (var i = 0, n = elementList.length; i < n; i++) {
+    for (i = 0, n = elementList.length; i < n; i++) {
       if (elementList[i].scope === name) {
         sortCss.each[name](settings, elementList[i]);
       }
     }
   }
+
   for (i = 0, n = opt.displace.length; i < n; i++) {
     name = opt.displace[i];
     if (displace[name].length) {
@@ -1272,17 +1292,43 @@ getValue['sass variable assignment'] = function (settings, element, parent) {
 };
 
 function fnChain(target, source, args) {
-  for (var k in source) {
-    if (typeof source[k] === 'function') {
-      target[k] = function (k) {
-        return function () {
-          var b = source[k].apply(null, args.concat([].slice.call(arguments)));
-          return typeof b === 'undefined' ? target : b;
-        }
-      }(k);
+  'use strict';
+
+  var name;
+
+  function chain(name) {
+
+    return function () {
+      var
+        n = arguments.length,
+        a = new Array(n),
+        i,
+        b;
+
+      for (i = 0; i < n; i++) {
+        a[i] = arguments[i];
+      }
+
+      b = source[name].apply(null, args.concat(a));
+
+      return typeof b === 'undefined' ? target : b;
+
+    };
+
+  }
+
+  if (!Array.isArray(args)) {
+    throw 'Invalid argument for \'fnChain\', the 3rd argument must be an array of arguments.';
+  }
+
+  for (name in source) {
+    if (typeof source[name] === 'function' && source.hasOwnProperty(name)) {
+      target[name] = chain(name);
     }
   }
+
   return target;
+
 }
 
 function forEach(array, fn) {

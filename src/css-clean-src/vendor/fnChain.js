@@ -1,13 +1,39 @@
 function fnChain(target, source, args) {
-  for (var k in source) {
-    if (typeof source[k] === 'function') {
-      target[k] = function (k) {
-        return function () {
-          var b = source[k].apply(null, args.concat([].slice.call(arguments)));
-          return typeof b === 'undefined' ? target : b;
-        }
-      }(k);
+  'use strict';
+
+  var name;
+
+  function chain(name) {
+
+    return function () {
+      var
+        n = arguments.length,
+        a = new Array(n),
+        i,
+        b;
+
+      for (i = 0; i < n; i++) {
+        a[i] = arguments[i];
+      }
+
+      b = source[name].apply(null, args.concat(a));
+
+      return typeof b === 'undefined' ? target : b;
+
+    };
+
+  }
+
+  if (!Array.isArray(args)) {
+    throw 'Invalid argument for \'fnChain\', the 3rd argument must be an array of arguments.';
+  }
+
+  for (name in source) {
+    if (typeof source[name] === 'function' && source.hasOwnProperty(name)) {
+      target[name] = chain(name);
     }
   }
+
   return target;
+
 }
