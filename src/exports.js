@@ -10,9 +10,14 @@
       var editorText     = editor.getText();
       var selectedBuffer = editor.getSelectedBufferRange();
       var tabChar = editorText.trim().match(/^{\n(\t+|^[ ]+)/m);
-      var lineBreak = atom.config.settings.editor.preferredLineLength || 80;
+      var lineBreak = 80;
       var tabSize = 2;
       var clean;
+
+      if (atom.config.settings && atom.config.settings.editor && atom.config.settings.editor.preferredLineLength) {
+        lineBreak = atom.config.settings.editor.preferredLineLength;
+      }
+
       if (tabChar) {
         tabSize = tabChar[1].length;
         tabChar = tabChar[1][0];
