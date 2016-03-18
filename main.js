@@ -785,6 +785,7 @@ var list = {};
     'nav-left',
     'resize',
     '-prefix-user-select',
+    '-prefix-pointer-events',
     'cursor',
   ]);
 }());
