@@ -1419,7 +1419,7 @@ function lasso(a){return lasso.chain(a)}"object"==typeof module&&(module.exports
       var editor         = this.getModel();
       var editorText     = editor.getText();
       var selectedBuffer = editor.getSelectedBufferRange();
-      var tabChar = editorText.trim().match(/^{\n(\t+|^[ ]+)/m);
+      var tabChar = editorText.trim().match(/\{\n(\t+|[ ]+)/m);
       var lineBreak = 80;
       var tabSize = 2;
       var clean;
