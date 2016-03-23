@@ -24,14 +24,16 @@ getValue['comment block'] = function (settings, element, parent) {
         }
       }
     }
-    element.value = v.reduce(function (a, b) {
-      if (b === '\n') {
-        return a += '\n';
-      } else if (a.substr(-1) === '\n') {
-        return a + b;
-      }
-      return a += ' ' + b;
-    }).split('\n');
+    if (v.length) {
+      element.value = v.reduce(function (a, b) {
+        if (b === '\n') {
+          return a += '\n';
+        } else if (a.substr(-1) === '\n') {
+          return a + b;
+        }
+        return a += ' ' + b;
+      }).split('\n');
+    }
   }
   if (settings.lineBreak) {
     lineBreak();
