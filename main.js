@@ -153,6 +153,7 @@ capture.scope = function (value) {
 
 capture.selector = function (string, opt) {
   var c = capture.shared.nested(string, opt);
+  
   return {
     scope : opt.scope,
     content : c.content,
@@ -160,6 +161,7 @@ capture.selector = function (string, opt) {
     depth : opt.depth,
     strlen : c.strlen
   };
+
 };
 
 capture['comment block'] = function (string, opt) {
@@ -368,17 +370,25 @@ capture['sass return'] = function (string, opt) {
 capture.shared.nested = function (string, opt) {
   var i = 0;
   var start = 0;
-  var args = string.substr(i, 2);
-  var o;
-  var c;
+  var open;
+  var closed;
   var v;
+  var args;
 
-  while (args.slice(1) !== '{' && args[0] === '#' || args === '#{' || args.slice(1) !== '{') {
-    i += 1;
-    args = string.substr(i, 2);
+  function getArguments(i) {
+    while (string[i] !== '{') {
+      i += 1;
+    }
+
+    if (string[i - 1] === '#') {
+      i = getArguments(i + 1);
+    }
+
+    return i;
   }
 
-  args = string.substr(0, i);
+  args = string.substr(0, getArguments(0));
+
   start = args.length;
   o = string.substr(start, i).match(/\{/g) || [];
   c = string.substr(start, i).match(/\}/g) || [];
@@ -988,11 +998,14 @@ getValue.map = function (settings, parent) {
   });
 };
 
-getValue['selector'] = function (settings, element, parent) {
+getValue.selector = function (settings, element, parent) {
   var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  var selector = element.selector.map((a, i) => i > 0 ? `${tab}${a}` : a).join(',\n');
   var v = getValue.shared.nested(settings, element, parent);
-  return `${selector} {\n${v}${tab}}`;
+  var selector = element.selector.map(function (a, i) {
+    return i > 0 ? tab + a : a;
+  }).join(',\n');
+
+  return selector + ' {\n' + v + tab + '}';
 };
 
 getValue['comment block'] = function (settings, element, parent) {
@@ -1235,8 +1248,11 @@ getValue['sass return'] = function (settings, element, parent) {
 getValue.shared.nested = function (settings, element, parent) {
   var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
   var $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
-  var scopeList = element.content.map((a) => a.scope);
+  var scopeList = element.content.map(function (a) { return a.scope; });
   var newGroupIndex = [];
+  var t;
+  var i = 0;
+  var n = scopeList.length;
   var newLineCases = [
     'selector',
     'sass function',
@@ -1244,25 +1260,32 @@ getValue.shared.nested = function (settings, element, parent) {
     'sass include block',
     'sass for'
   ];
-  var t;
-  for (var i = 0, n = scopeList.length; i < n; i++) {
+
+  for (; i < n; i++) {
     newGroupIndex[i] = i > 0 && t !== scopeList[i] && newLineCases.indexOf(scopeList[i]) !== -1;
     t = scopeList[i];
   }
+
   return getValue.map(settings, element.content).map(function (value, i) {
+
     if (element.content[i].name === '@else if') {
-      return ` ${value}`;
+      return ' ' + value;
     }
+
     if (element.content[i].name === '@else') {
-      return ` ${value}`;
+      return ' ' + value;
     }
+
     if (element.content[i].index > 1 && element.content[i].name === '@if') {
-      return `${tab}${$tab}${value}`;
+      return tab + $tab + value;
     }
+
     if (element.content[i].name === '@if') {
-      return `${tab}${$tab}${value}`;
+      return tab + $tab + value;
     }
-    return `${tab}${$tab}${value}\n`;
+
+    return tab + $tab + value + '\n';
+
   }).join('');
 };
 

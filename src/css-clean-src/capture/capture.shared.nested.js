@@ -1,17 +1,25 @@
 capture.shared.nested = function (string, opt) {
   var i = 0;
   var start = 0;
-  var args = string.substr(i, 2);
-  var o;
-  var c;
+  var open;
+  var closed;
   var v;
+  var args;
 
-  while (args.slice(1) !== '{' && args[0] === '#' || args === '#{' || args.slice(1) !== '{') {
-    i += 1;
-    args = string.substr(i, 2);
+  function getArguments(i) {
+    while (string[i] !== '{') {
+      i += 1;
+    }
+
+    if (string[i - 1] === '#') {
+      i = getArguments(i + 1);
+    }
+
+    return i;
   }
 
-  args = string.substr(0, i);
+  args = string.substr(0, getArguments(0));
+
   start = args.length;
   o = string.substr(start, i).match(/\{/g) || [];
   c = string.substr(start, i).match(/\}/g) || [];
