@@ -3,6 +3,17 @@ getValue['comment block'] = function (settings, element, parent) {
   var initValue = element.value.slice();
   var value;
 
+  function isSpecial() {
+    /*
+      /*!
+        Theme Name: casino
+        Version: 1.0
+        Author: HannesDev
+      *\/
+    */
+    return element.value[0] === '!';
+  }
+
   function isTitle() {
     /*
       Titling support
@@ -65,11 +76,23 @@ getValue['comment block'] = function (settings, element, parent) {
         if (i > 0 && i < element.value.length - 1) {
           $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
         }
-        
+
         return $tab + tab + line;
       }).join('\n');
 
       return tab + '/*' + value + tab + '*/';
+    } else if (isSpecial()) {
+      value = element.value.map(function (line, i) {
+        var $tab = '';
+
+        if (i > 0) {
+          $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
+        }
+
+        return $tab + tab + line;
+      }).join('\n');
+
+      return tab + '/*' + value + '\n' + tab + '*/';
     }
 
     value = element.value.map(function (line) {
