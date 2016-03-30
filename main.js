@@ -1019,12 +1019,14 @@ getValue['comment block'] = function (settings, element, parent) {
   var value;
 
   function isSpecial() {
-    /*
+    /* Special comments are used by Grunt and Gulp
+
       /*!
         Theme Name: casino
         Version: 1.0
         Author: HannesDev
       *\/
+
     */
     return element.value[0] === '!';
   }
