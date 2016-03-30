@@ -1005,7 +1005,12 @@ getValue.selector = function (settings, element, parent) {
     return i > 0 ? tab + a : a;
   }).join(',\n');
 
-  return selector + ' {\n' + v + tab + '}';
+  if (v.length) {
+    return selector + ' {\n' + v + tab + '}';
+  } else {
+    return selector + ' {}';
+  }
+
 };
 
 getValue['comment block'] = function (settings, element, parent) {
