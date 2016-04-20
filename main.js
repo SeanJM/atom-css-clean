@@ -1187,7 +1187,7 @@ getValue['sass each'] = function (settings, element, parent) {
       if (i === 0) {
         value[i] = element.name + ' ' + value[i];
       } else {
-        value[i] = tab + new Array(element.name.length + 2).join(settings.tabChar) + new Array(value[0].substr(0, value[0].indexOf('(')).length + 1).join(' ') + value[i];
+        value[i] = tab + new Array(element.name.length + 2).join(' ') + new Array(value[0].substr(0, value[0].indexOf('(')).length + 1).join(' ') + value[i];
       }
     }
     each = value.join(', \n');
