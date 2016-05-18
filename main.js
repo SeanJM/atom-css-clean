@@ -1060,41 +1060,32 @@ getValue.selector = function (settings, element, parent) {
     return i > 0 ? tab + a : a;
   }).join(',\n');
 
-  if (v.length) {
+  if (v.length && !element.last && element.depth > 0) {
+    return selector + ' {\n' + v + tab + '}\n';
+  } else if (v.length && element.last && element.depth > 0) {
     return selector + ' {\n' + v + tab + '}';
-  } else {
+  } else if (v.length && element.depth === 0) {
+    return selector + ' {\n' + v + tab + '}';
+  } else if (element.last) {
     return selector + ' {}';
+  } else {
+    return selector + ' {}\n';
   }
-
 };
 
 getValue['comment block'] = function (settings, element, parent) {
   var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  var initValue = element.value.slice();
+  var isTitleStart = /^[\-]+(\s+|)\*\\$/.test(element.value[0].trim());
+  var isTitleEnd = /^\\\*(\s+|)[\-]+$/.test(element.value.slice(-1)[0].trim());
+  var isTitle = isTitleStart && isTitleEnd;
+  var isSpecialComment = element.value[0] === '!';
   var value;
+  var elementLength = element.value.length;
 
-  function isSpecial() {
-    /* Special comments are used by Grunt and Gulp
-
-      /*!
-        Theme Name: casino
-        Version: 1.0
-        Author: HannesDev
-      *\/
-
-    */
-    return element.value[0] === '!';
-  }
-
-  function isTitle() {
-    /*
-      Titling support
-      http://cssguidelin.es/#titling
-    */
-    var start = /^[\-]+(\s+|)\*\\$/.test(initValue[0]);
-    var end = /^\\\*(\s+|)[\-]+$/.test(initValue.slice(-1)[0]);
-    return start && end;
-  }
+  /*
+  Titling support
+  http://cssguidelin.es/#titling
+  */
 
   function lineBreak() {
     var lines = [[]];
@@ -1141,46 +1132,39 @@ getValue['comment block'] = function (settings, element, parent) {
   }
 
   if (element.value.length > 1) {
-    if (isTitle()) {
+    if (isTitle) {
       value = element.value.map(function (line, i) {
         var $tab = '';
-
-        if (i > 0 && i < element.value.length - 1) {
-          $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
-        }
-
-        return $tab + tab + line;
-      }).join('\n');
-
-      return tab + '/*' + value + tab + '*/';
-    } else if (isSpecial()) {
-      value = element.value.map(function (line, i) {
-        var $tab = '';
-
         if (i > 0) {
           $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
         }
-
-        return $tab + tab + line;
-      }).join('\n');
-
-      return tab + '/*' + value + '\n' + tab + '*/';
+        return i < elementLength - 1 ? $tab + line + '\n' : $tab + line;
+      });
+      return '/*' + value.join('') + '*/\n';
+    } else if (isSpecialComment) {
+      value = element.value.map(function (line, i) {
+        var $tab = '';
+        if (i > 0) {
+          $tab = tab + new Array(settings.tabSize + 1).join(settings.tabChar);
+        }
+        return $tab + line;
+      });
+      return '/*' + value.join('\n') + '\n' + tab + '*/\n';
     }
 
     value = element.value.map(function (line) {
       var $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
-      return $tab + tab + line;
+      return $tab + line;
     }).join('\n');
 
-    return tab + '/*\n' + value + '\n' + tab + '*/';
+    return '/*\n' + value + '\n' + tab + '*/\n';
   }
 
-  return tab + '/*' + element.value.join('\n') + '*/';
+  return '/* ' + element.value.join('\n') + ' */';
 };
 
 getValue['comment inline'] = function (settings, element, parent) {
-  var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  return tab + '// ' + element.value;
+  return '// ' + element.value;
 };
 
 getValue['font face'] = function (settings, element, parent) {
