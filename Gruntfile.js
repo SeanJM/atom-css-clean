@@ -1,8 +1,6 @@
 var matchFile = require('match-file-utility');
 var js = {
-  cssClean : matchFile('src/css-clean-src', /\.js$/)
-  .smartSort()
-  .concat('src/exports.js')
+  cssClean : matchFile('src/', /\.js$/).smartSort()
 };
 
 module.exports = function(grunt) {
