@@ -5,7 +5,6 @@ sortCss.scope = function (settings, content, order) {
   var i;
   var n;
   var x;
-  var y;
 
   // Determine if a comment is the first element in the array
   while (content[start].scope.substr(0, 7) === 'comment') {
@@ -25,7 +24,7 @@ sortCss.scope = function (settings, content, order) {
     }
   }
 
-  // Sort
+  // Sort block
   for (name in displace) {
     x = displace[name];
     if (Array.isArray(x) && x.length && typeof sortCss.list[name] === 'function') {
@@ -33,14 +32,15 @@ sortCss.scope = function (settings, content, order) {
     }
   }
 
-  for (name in sortCss.each) {
-    for (i = 0, n = content.length; i < n; i++) {
-      if (content[i].scope === name) {
-        sortCss.each[name](settings, content[i]);
-      }
+  // Sort individual
+  for (i = 0, n = content.length; i < n; i++) {
+    x = content[i];
+    if (typeof sortCss.each[x.scope] === 'function') {
+      sortCss.each[x.scope](settings, x);
     }
   }
 
+  // Insert the displaced groups back into the main content array
   for (i = 0, n = order.length; i < n; i++) {
     name = order[i];
     if (displace[name].length) {
