@@ -20,14 +20,13 @@
 
       if (tabChar) {
         tabSize = tabChar[1].length;
-        tabChar = tabChar[1][0];
+        tabChar = /\t/.test(tabChar[1][0]) ? 'tab' : 'space';
       } else {
-        tabChar = ' ';
+        tabChar = 'space';
       }
       if (/^source\.css/.test(editor.getRootScopeDescriptor().scopes[0])) {
         clean = cleanCss(editorText)
-        .setTabChar(tabChar)
-        .setTabSize(tabSize)
+        .indent(tabSize, tabChar)
         .setLineBreak(lineBreak)
         .sortBlockScope()
         .sortMainScope()
