@@ -6,6 +6,7 @@ sortCss.scope = function (settings, elementList, opt) {
   var n;
   var x;
   var y;
+  
   // Determine if a comment is the first element in the array
   while (elementList[start].scope.substr(0, 7) === 'comment') {
     start += 1;
