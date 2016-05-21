@@ -495,16 +495,16 @@ cleanCss.fn.align = function (settings, string) {
   settings.align = true;
 };
 
+cleanCss.fn.indent = function (settings, string, length, type) {
+  if (type === 'space') {
+    settings.tabChar = ' ';
+  } else if (type === 'tab') {
+    settings.tabChar = '\t';
+  }
+};
+
 cleanCss.fn.setLineBreak = function (settings, string, length) {
   settings.lineBreak = length;
-};
-
-cleanCss.fn.setTabChar = function (settings, string, tabChar) {
-  settings.tabChar = tabChar;
-};
-
-cleanCss.fn.setTabSize = function (settings, string, tabSize) {
-  settings.tabSize = tabSize;
 };
 
 cleanCss.fn.sortBlockScope = function (settings, string) {
@@ -1635,14 +1635,13 @@ function lasso(a){return lasso.chain(a)}"object"==typeof module&&(module.exports
 
       if (tabChar) {
         tabSize = tabChar[1].length;
-        tabChar = tabChar[1][0];
+        tabChar = /\t/.test(tabChar[1][0]) ? 'tab' : 'space';
       } else {
-        tabChar = ' ';
+        tabChar = 'space';
       }
       if (/^source\.css/.test(editor.getRootScopeDescriptor().scopes[0])) {
         clean = cleanCss(editorText)
-        .setTabChar(tabChar)
-        .setTabSize(tabSize)
+        .indent(tabSize, tabChar)
         .setLineBreak(lineBreak)
         .sortBlockScope()
         .sortMainScope()
