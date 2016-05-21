@@ -21,21 +21,17 @@ function sortCss(settings, cssObject) {
     'sass placeholder',
   ];
 
-  function sortDeep(array) {
-    sortCss.scope(settings, array, {
-      displace : displaceDeep
-    });
+  function sortDeep(content) {
+    sortCss.scope(settings, content, displaceDeep);
 
-    for (var i = 0, n = array.length; i < n; i++) {
-      if (Array.isArray(array[i].content) && array[i].content.length) {
-        sortDeep(array[i].content);
+    for (var i = 0, n = content.length; i < n; i++) {
+      if (Array.isArray(content[i].content) && content[i].content.length) {
+        sortDeep(content[i].content);
       }
     }
   }
 
-  sortCss.scope(settings, cssObject, {
-    displace : displaceZeroDepth
-  });
+  sortCss.scope(settings, cssObject, displaceZeroDepth);
 
   if (settings.sortBlockScope) {
     for (var i = 0, n = cssObject.length; i < n; i++) {
