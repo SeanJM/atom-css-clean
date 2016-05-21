@@ -4,15 +4,6 @@ function capture(string, group, depth) {
   var n;
   var c;
   var stackOverFlowIntMax = 10000;
-  var scopeCount = {};
-  var alignTogether = [
-    'property group',
-    'sass import',
-    'sass include',
-    'sass include arguments',
-    'sass extend',
-    'sass variable assignment',
-  ];
 
   function getScope(string) {
     if (string.substr(0, 2) === '//') {
@@ -95,7 +86,6 @@ function capture(string, group, depth) {
 
     c = capture[scope](string, {
       group : group,
-      depth : depth,
       scope : scope
     });
 
@@ -108,47 +98,6 @@ function capture(string, group, depth) {
     throw 'CSS Clean has stopped: There must be a problem with your CSS.';
   }
 
-  for (i = 0, n = group.length; i < n; i++) {
-    // untracked scopes & ''@if' starts a new group
-    if (typeof scopeCount[group[i].scope] === 'undefined' || group[i].name === '@if') {
-      scopeCount[group[i].scope] = {
-        groupLength : 1,
-        align : group[i].name ? group[i].name.length : 0
-      };
-    } else {
-      scopeCount[group[i].scope].groupLength += 1;
-      if (group[i].name && scopeCount[group[i].scope].align < group[i].name.length) {
-        scopeCount[group[i].scope].align = group[i].name.length;
-      }
-    }
-    group[i].first = scopeCount[group[i].scope].groupLength === 1;
-    group[i].groupIndex = scopeCount[group[i].scope].groupLength - 1;
-    group[i].index = i;
-    group[i].length = n;
-  }
-
-  for (i = 0, n = group.length; i < n; i++) {
-    group[i].groupLength = scopeCount[group[i].scope].groupLength;
-    group[i].last = group[i].groupIndex === group[i].groupLength - 1;
-  }
-  if (depth === 0) {
-    for (i = 0, n = group.length; i < n; i++) {
-      group[i].align = scopeCount[group[i].scope].align;
-    }
-  } else {
-    // Get alignments
-    alignTogether.align = 0;
-    for (i = 0, n = alignTogether.length; i < n; i++) {
-      if (scopeCount[alignTogether[i]] && scopeCount[alignTogether[i]].align > alignTogether.align) {
-        alignTogether.align = scopeCount[alignTogether[i]].align;
-      }
-    }
-    for (i = 0, n = group.length; i < n; i++) {
-      if (alignTogether.indexOf(group[i].scope) !== -1) {
-        group[i].align = alignTogether.align;
-      }
-    }
-  }
   return group;
 }
 
@@ -505,10 +454,15 @@ capture['sass variable assignment'] = function (string, opt) {
 
 function cleanCss(string) {
   var settings = {
-    lineBreak : 80,
-    align : false,
-    sortMainScope : false,
-    sortBlockScope : true,
+    alignTogether : [
+      'property group',
+      'sass import',
+      'sass include',
+      'sass include arguments',
+      'sass extend',
+      'sass variable assignment',
+    ],
+
     blockScopeOrder : [
       'sass import',
       'sass variable assignment',
@@ -520,6 +474,11 @@ function cleanCss(string) {
       'selector',
       'sass return'
     ],
+    
+    lineBreak : 80,
+    align : false,
+    sortMainScope : false,
+    sortBlockScope : true,
     propertyGroupOrder : list.properties,
     tabSize : 2
   };
@@ -870,37 +829,40 @@ var list = {};
 }());
 
 function sortCss(settings, cssObject) {
-  function sortDeep(array) {
-    sortCss.scope(settings, array, {
-      displace : [
-        'sass function',
-        'sass import',
-        'sass include',
-        'sass include arguments',
-        'sass mixin',
-        'sass include block',
-        'sass extend',
-        'property group',
-      ]
-    });
-    for (var i = 0, n = array.length; i < n; i++) {
-      if (Array.isArray(array[i].content) && array[i].content.length) {
-        sortDeep(array[i].content);
+  var displaceDeep = [
+    'sass function',
+    'sass import',
+    'sass include',
+    'sass include arguments',
+    'sass mixin',
+    'sass include block',
+    'sass extend',
+    'property group',
+  ];
+
+  var displaceZeroDepth = [
+    'sass import',
+    'sass include',
+    'sass variable assignment',
+    'font face',
+    'sass function',
+    'sass mixin',
+    'sass include block',
+    'sass placeholder',
+  ];
+
+  function sortDeep(content) {
+    sortCss.scope(settings, content, displaceDeep);
+
+    for (var i = 0, n = content.length; i < n; i++) {
+      if (Array.isArray(content[i].content) && content[i].content.length) {
+        sortDeep(content[i].content);
       }
     }
   }
-  sortCss.scope(settings, cssObject, {
-    displace : [
-      'sass import',
-      'sass include',
-      'sass variable assignment',
-      'font face',
-      'sass function',
-      'sass mixin',
-      'sass include block',
-      'sass placeholder',
-    ]
-  });
+
+  sortCss.scope(settings, cssObject, displaceZeroDepth);
+
   if (settings.sortBlockScope) {
     for (var i = 0, n = cssObject.length; i < n; i++) {
       if (Array.isArray(cssObject[i].content) && cssObject[i].content.length) {
@@ -913,7 +875,7 @@ function sortCss(settings, cssObject) {
 sortCss.list = {};
 sortCss.each = {};
 
-sortCss.scope = function (settings, elementList, opt) {
+sortCss.scope = function (settings, content, order) {
   var displace = {};
   var start = 0;
   var name;
@@ -921,43 +883,45 @@ sortCss.scope = function (settings, elementList, opt) {
   var n;
   var x;
   var y;
+
   // Determine if a comment is the first element in the array
-  while (elementList[start].scope.substr(0, 7) === 'comment') {
+  while (content[start].scope.substr(0, 7) === 'comment') {
     start += 1;
   }
 
-  for (i = 0, n = opt.displace.length; i < n; i++) {
-    displace[opt.displace[i]] = [];
+  for (i = 0, n = order.length; i < n; i++) {
+    displace[order[i]] = [];
   }
 
-  for (i = elementList.length - 1; i >= start; i--) {
-    name = elementList[i].scope;
+  for (i = content.length - 1; i >= start; i--) {
+    name = content[i].scope;
     // Add to displace list
-    if (opt.displace.indexOf(name) !== -1) {
-      displace[name].push(elementList[i]);
-      elementList.splice(i, 1);
+    if (order.indexOf(name) > -1) {
+      displace[name].unshift(content[i]);
+      content.splice(i, 1);
     }
   }
 
   // Sort
-  for (name in sortCss.list) {
-    if (Array.isArray(displace[name]) && displace[name].length) {
-      sortCss.list[name](settings, displace[name]);
+  for (name in displace) {
+    x = displace[name];
+    if (Array.isArray(x) && x.length && typeof sortCss.list[name] === 'function') {
+      sortCss.list[name](settings, x);
     }
   }
 
   for (name in sortCss.each) {
-    for (i = 0, n = elementList.length; i < n; i++) {
-      if (elementList[i].scope === name) {
-        sortCss.each[name](settings, elementList[i]);
+    for (i = 0, n = content.length; i < n; i++) {
+      if (content[i].scope === name) {
+        sortCss.each[name](settings, content[i]);
       }
     }
   }
 
-  for (i = 0, n = opt.displace.length; i < n; i++) {
-    name = opt.displace[i];
+  for (i = 0, n = order.length; i < n; i++) {
+    name = order[i];
     if (displace[name].length) {
-      [].splice.apply(elementList, [start, 0].concat(displace[name]));
+      [].splice.apply(content, [start, 0].concat(displace[name]));
       start += displace[name].length;
     }
   }
@@ -1035,23 +999,94 @@ sortCss.list['property group']['src'] = function (a, b) {
   return -1;
 };
 
-sortCss.list['sass variable assignment'] = function (settings, list) {
-  list.sort(smartSort('name'));
-  for (var i = 0, n = list.length; i < n; i++) {
-    list[i].groupIndex = i;
-    list[i].first = i === 0;
-    list[i].last = i === n - 1;
-  }
-};
-
 sortCss.list['property group']['background-color'] = sortCss.list['property group']['background'];
 
 function getValue(settings, cssObject) {
+  var i;
+  var n;
+
+  function indexSiblings(group, depth) {
+    var scopeCount = {};
+    var align = 0;
+    var i = 0;
+    var n = group.length;
+    var x;
+
+    for (; i < n; i++) {
+      // untracked scopes & ''@if' starts a new group
+      x = group[i];
+
+      if (typeof scopeCount[x.scope] === 'undefined' || x.name === '@if') {
+        scopeCount[x.scope] = {
+          groupLength : 1,
+          align : x.name ? x.name.length : 0
+        };
+      } else {
+        scopeCount[x.scope].groupLength += 1;
+
+        if (x.name && scopeCount[x.scope].align < x.name.length) {
+          scopeCount[x.scope].align = x.name.length;
+        }
+      }
+
+      x.first = scopeCount[x.scope].groupLength === 1;
+      x.groupIndex = scopeCount[x.scope].groupLength - 1;
+
+      x.index = i;
+      x.length = n;
+      x.depth = depth;
+    }
+
+    i = 0;
+
+    for (; i < n; i++) {
+      x = group[i];
+
+      x.groupLength = scopeCount[x.scope].groupLength;
+      x.last = x.groupIndex === x.groupLength - 1;
+
+      if (x.depth === 0) {
+        x.align = scopeCount[x.scope].align;
+      }
+    }
+
+    // Get alignments for groups that align together
+    i = 0;
+    n = settings.alignTogether.length;
+
+    for (; i < n; i++) {
+      x = settings.alignTogether[i];
+      if (scopeCount[x] && scopeCount[x].align > align) {
+        align = scopeCount[x].align;
+      }
+    }
+
+    i = 0;
+    n = group.length;
+
+    for (; i < n; i++) {
+      x = group[i];
+
+      if (settings.alignTogether.indexOf(x.scope) !== -1) {
+        x.align = align;
+      }
+
+      // Recursively get information about siblings
+      if (Array.isArray(x.content)) {
+        indexSiblings(x.content, depth + 1);
+      }
+    }
+  }
+
+  indexSiblings(cssObject, 0);
+
   return getValue.map(settings, cssObject).map(function (value, i) {
     var element = cssObject[i];
+
     if (element.scope === 'sass variable assignment' && !element.last) {
       return value;
     }
+
     return value + '\n';
   }).join('\n');
 }
@@ -1074,11 +1109,15 @@ getValue.selector = function (settings, element, siblings) {
     return i > 0 ? tab + a : a;
   }).join(',\n');
 
-  if (siblings[0] !== element && element.first) {
-    return '\n' + tab + selector + ' {\n' + v + tab + '}\n';
-  } else if (v.length && !element.last && element.depth > 0) {
-    return selector + ' {\n' + v + tab + '}\n';
-  } else if (v.length && element.last && element.depth > 0) {
+  if (element.depth > 0 && siblings[0] !== element && element.first) {
+    if (!element.last) {
+      return '\n' + tab + selector + ' {\n' + v + tab + '}\n';
+    }
+    return '\n' + tab + selector + ' {\n' + v + tab + '}';
+  } else if (element.depth > 0 && v.length) {
+    if (!element.last) {
+      return selector + ' {\n' + v + tab + '}\n';
+    }
     return selector + ' {\n' + v + tab + '}';
   } else if (v.length && element.depth === 0) {
     return selector + ' {\n' + v + tab + '}';
