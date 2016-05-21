@@ -5,11 +5,15 @@ getValue.selector = function (settings, element, siblings) {
     return i > 0 ? tab + a : a;
   }).join(',\n');
 
-  if (siblings[0] !== element && element.first) {
-    return '\n' + tab + selector + ' {\n' + v + tab + '}\n';
-  } else if (v.length && !element.last && element.depth > 0) {
-    return selector + ' {\n' + v + tab + '}\n';
-  } else if (v.length && element.last && element.depth > 0) {
+  if (element.depth > 0 && siblings[0] !== element && element.first) {
+    if (!element.last) {
+      return '\n' + tab + selector + ' {\n' + v + tab + '}\n';
+    }
+    return '\n' + tab + selector + ' {\n' + v + tab + '}';
+  } else if (element.depth > 0 && v.length) {
+    if (!element.last) {
+      return selector + ' {\n' + v + tab + '}\n';
+    }
     return selector + ' {\n' + v + tab + '}';
   } else if (v.length && element.depth === 0) {
     return selector + ' {\n' + v + tab + '}';
