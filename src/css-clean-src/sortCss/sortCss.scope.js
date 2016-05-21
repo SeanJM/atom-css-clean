@@ -1,4 +1,4 @@
-sortCss.scope = function (settings, elementList, opt) {
+sortCss.scope = function (settings, content, order) {
   var displace = {};
   var start = 0;
   var name;
@@ -6,44 +6,45 @@ sortCss.scope = function (settings, elementList, opt) {
   var n;
   var x;
   var y;
-  
+
   // Determine if a comment is the first element in the array
-  while (elementList[start].scope.substr(0, 7) === 'comment') {
+  while (content[start].scope.substr(0, 7) === 'comment') {
     start += 1;
   }
 
-  for (i = 0, n = opt.displace.length; i < n; i++) {
-    displace[opt.displace[i]] = [];
+  for (i = 0, n = order.length; i < n; i++) {
+    displace[order[i]] = [];
   }
 
-  for (i = elementList.length - 1; i >= start; i--) {
-    name = elementList[i].scope;
+  for (i = content.length - 1; i >= start; i--) {
+    name = content[i].scope;
     // Add to displace list
-    if (opt.displace.indexOf(name) !== -1) {
-      displace[name].push(elementList[i]);
-      elementList.splice(i, 1);
+    if (order.indexOf(name) > -1) {
+      displace[name].unshift(content[i]);
+      content.splice(i, 1);
     }
   }
 
   // Sort
-  for (name in sortCss.list) {
-    if (Array.isArray(displace[name]) && displace[name].length) {
-      sortCss.list[name](settings, displace[name]);
+  for (name in displace) {
+    x = displace[name];
+    if (Array.isArray(x) && x.length && typeof sortCss.list[name] === 'function') {
+      sortCss.list[name](settings, x);
     }
   }
 
   for (name in sortCss.each) {
-    for (i = 0, n = elementList.length; i < n; i++) {
-      if (elementList[i].scope === name) {
-        sortCss.each[name](settings, elementList[i]);
+    for (i = 0, n = content.length; i < n; i++) {
+      if (content[i].scope === name) {
+        sortCss.each[name](settings, content[i]);
       }
     }
   }
 
-  for (i = 0, n = opt.displace.length; i < n; i++) {
-    name = opt.displace[i];
+  for (i = 0, n = order.length; i < n; i++) {
+    name = order[i];
     if (displace[name].length) {
-      [].splice.apply(elementList, [start, 0].concat(displace[name]));
+      [].splice.apply(content, [start, 0].concat(displace[name]));
       start += displace[name].length;
     }
   }
