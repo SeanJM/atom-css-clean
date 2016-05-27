@@ -20,7 +20,7 @@ function cleanCss(string) {
       'selector',
       'sass return'
     ],
-    
+
     lineBreak : 80,
     align : false,
     sortMainScope : false,
