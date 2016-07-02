@@ -272,7 +272,7 @@ capture['sass for'] = function (string, opt) {
   var c = capture.shared.nested(string, opt);
   var m = c.arguments.split(' ');
   var name = m[0];
-  var value = m.slice(1).filter((a) => a.length).join(' ');
+  var value = m.slice(1).filter(a => a.length).join(' ');
   return {
     scope : c.scope,
     name : m[0],
@@ -319,7 +319,7 @@ capture['sass import'] = function (string, opt) {
   return {
     scope : opt.scope,
     name : m[1],
-    value : m[2].split(',').map((a) => a.trim().replace(/^\'|\'$|^\"|\"$/g, '')),
+    value : m[2].split(',').map(a => a.trim().replace(/^\'|\'$|^\"|\"$/g, '')),
     depth : opt.depth,
     strlen : m[0].length
   };
@@ -350,7 +350,7 @@ capture['sass mixin'] = function (string, opt) {
   };
   if (args.length) {
     args = args.slice(-1)[0].value;
-    o.arguments = args.split(',').map((a) => a.trim());
+    o.arguments = args.split(',').map(a => a.trim());
   }
   return o;
 };
@@ -417,15 +417,60 @@ capture.shared.nested = function (string, opt) {
 };
 
 capture['sass include arguments'] = function (string, opt) {
-  var m = string.match(/^(@include)\s+([a-zA-Z0-9\-\_]+)([^;]+?);/);
-  var args = lasso.between(m[3], '(', ')').slice(-1)[0].value;
+  var name = '';
+  var value = '';
+  var args = '';
+
+  var i = 0;
+  var n = string.length;
+  var o = [0];
+
+  // type
+  if (string[i] === '@') {
+    while (!/\s/.test(string[i]) && i < n) {
+      name += string[i];
+      i++;
+    }
+  }
+
+  while (/\s/.test(string[i]) && i < n) {
+    i++;
+  }
+
+  // function name
+  while (!/\(/.test(string[i]) && i < n) {
+    value += string[i];
+    i++;
+  }
+
+  // function name
+  if (string[i] === '(') {
+    o[0] += 1;
+    o.start = true;
+    while (o > 0 && i < n) {
+      if (!o.start && string[i] === '(') {
+        o++;
+      } else if (string[i] === ')') {
+        o--;
+      }
+
+      args += string[i];
+      o.start = false;
+      i++;
+    }
+  }
+
+  args = args.substr(1, args.length - 2)
+    .split(',')
+    .map(a => a.trim());
+
   return {
     scope : opt.scope,
-    name : m[1],
-    value : m[2],
-    arguments : args.split(',').map(function (a) { return a.trim(); }),
+    name : name,
+    value : value,
+    arguments : args,
     depth : opt.depth,
-    strlen : m[0].length
+    strlen : i + 1
   };
 };
 
@@ -1473,15 +1518,12 @@ getValue.shared.nested = function (settings, element, parent) {
 
 getValue['sass include arguments'] = function (settings, element, parent) {
   var args = '(' + element.arguments.join(', ') + ')';
-  var align;
-  if (element.depth === 0) {
-    align = new Array(element.align - element.name.length + 2).join(' ');
-  } else {
-    align = new Array(element.align - element.name.length + 4).join(' ');
-  }
-  if (element.align && parent.length > 1) {
+  var align = new Array(element.align - element.name.length + 4).join(' ');
+
+  if (element.depth && element.align && parent.length > 1) {
     return `${element.name}${align}${element.value}${args};`;
   }
+
   return `${element.name} ${element.value}${args};`;
 };
 
