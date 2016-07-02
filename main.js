@@ -1252,7 +1252,7 @@ getValue['comment block'] = function (settings, element, parent) {
         }
         return $tab + line;
       });
-      return '/*' + value.join('\n') + '\n' + tab + '*/\n';
+      return '/*' + value.join('\n') + '\n' + tab + '*/';
     }
 
     value = element.value.map(function (line) {
@@ -1260,7 +1260,7 @@ getValue['comment block'] = function (settings, element, parent) {
       return $tab + line;
     }).join('\n');
 
-    return '/*\n' + value + '\n' + tab + '*/\n';
+    return '/*\n' + value + '\n' + tab + '*/';
   }
 
   return '/* ' + element.value.join('\n') + ' */';
