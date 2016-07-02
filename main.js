@@ -1355,7 +1355,7 @@ getValue['font face'] = function (settings, element, parent) {
       return i > 0
         ? tab + align + value
         : value;
-    }).join(',\n\n');
+    }).join(',\n');
 
     return element.name + ' ' + value + ' {\n' + nested + tab + '}';
   };
