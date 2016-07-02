@@ -171,12 +171,7 @@ capture['font face'] = function (string, opt) {
   };
 };
 
-capture['media query'] = function (string, opt) {
-  var c = capture.shared.nested(string, opt);
-  var m = c.arguments.split(' ');
-  var name = m[0];
-  var value = m.slice(1).join(' ').replace(/\s+|\n/g, ' ');
-
+(function () {
   function pushLine(lines, v, i) {
     var x;
 
@@ -194,35 +189,68 @@ capture['media query'] = function (string, opt) {
     return i;
   }
 
-  value = splitByComma(value);
+  function getChunk(line, startChr, untilChr) {
+    var i = line.indexOf(startChr) + 1;
+    var n = line.length;
+    var chunk = '';
 
-  value = value.map(function (v) {
-    var lines = [''];
-    var i = 0;
-    var n = v.length;
-
-    for (; i < n; i++) {
-      if (v.substr(i, 4) === 'only' && [' ', '('].indexOf(v[i + 4]) !== -1) {
-        i = pushLine(lines, v, i);
-      } else if (v.substr(i, 3) === 'and' && [' ', '('].indexOf(v[i + 3]) !== -1) {
-        i = pushLine(lines, v, i);
-      } else {
-        lines[lines.length - 1] = lines[lines.length - 1].concat(v[i]);
-      }
+    while (line[i] !== untilChr && i < n) {
+      chunk += line[i];
+      i++;
     }
 
-    return lines;
-  });
+    return chunk.trim();
+  }
 
-  return {
-    scope : opt.scope,
-    content : c.content,
-    name : name,
-    value : value,
-    depth : opt.depth,
-    strlen : c.strlen
+  capture['media query'] = function (string, opt) {
+    var c = capture.shared.nested(string, opt);
+    var m = c.arguments.split(' ');
+    var name = m[0];
+    var value = m.slice(1).join(' ').replace(/\s+|\n/g, ' ');
+
+    value = splitByComma(value);
+
+    value = value.map(function (v) {
+      var lines = [''];
+      var i = 0;
+      var n = v.length;
+
+      for (; i < n; i++) {
+        if (v.substr(i, 4) === 'only' && [' ', '('].indexOf(v[i + 4]) !== -1) {
+          i = pushLine(lines, v, i);
+        } else if (v.substr(i, 3) === 'and' && [' ', '('].indexOf(v[i + 3]) !== -1) {
+          i = pushLine(lines, v, i);
+        } else {
+          lines[lines.length - 1] = lines[lines.length - 1].concat(v[i]);
+        }
+      }
+
+      return lines.map(function (line) {
+        var property;
+        var value;
+
+        if (line.substr(0, 4) === 'only' || line.substr(0, 3) !== 'and') {
+          return { mediaType : line };
+        }
+
+        return {
+          operator : line.split(' ')[0],
+          property : getChunk(line, '(', ':'),
+          value : getChunk(line, ':', ')')
+        };
+      });
+    });
+
+    return {
+      scope : opt.scope,
+      content : c.content,
+      name : name,
+      value : value,
+      depth : opt.depth,
+      strlen : c.strlen
+    };
   };
-};
+}());
 
 capture['property group'] = function (string, opt) {
   var i = 0;
@@ -1277,33 +1305,61 @@ getValue['font face'] = function (settings, element, parent) {
   return `${selector} {\n${v}${tab}}`;
 };
 
-getValue['media query'] = function (settings, element, parent) {
-  var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  var align = new Array(element.name.length + 2).join(' ');
-  var nested = getValue.shared.nested(settings, element, parent);
-  var value;
+(function () {
+  function flatten(opt, condition) {
+    var padding = new Array(opt.padding + 1 - condition.property.length).join(' ');
 
-  function joinLines(a) {
-    return a.map(function (b, i) {
-      if (i > 0) {
-        return tab + align + b;
-      }
-      return b;
-    }).join('\n');
+    // and (min-device-width : 300px)
+    return condition.operator +
+      ' (' +
+      condition.property +
+      padding +
+      ' : ' +
+      condition.value +
+      ')';
   }
 
-  value = element.value.map(function (a, i) {
-    a = joinLines(a);
+  function joinLines(opt) {
+    return opt.mediaElement
+      .map(function (condition, i) {
+        return condition.mediaType
+          ? condition.mediaType
+          : opt.tab + opt.align + flatten(opt, condition);
+      })
+      .join('\n');
+  }
 
-    if (i > 0) {
-      return tab + align + a;
-    }
+  getValue['media query'] = function (settings, element, parent) {
+    var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
+    var align = new Array(element.name.length + 2).join(' ');
+    var nested = getValue.shared.nested(settings, element, parent);
+    var padding = 0;
+    var value;
 
-    return a;
-  }).join(',\n\n');
+    element.value.forEach(function (a) {
+      a.forEach(function (b) {
+        if (b.property && b.property.length > padding) {
+          padding = b.property.length;
+        }
+      });
+    });
 
-  return element.name + ' ' + value + ' {\n' + nested + tab + '}';
-};
+    value = element.value.map(function (mediaElement, i) {
+      var value = joinLines({
+        padding : padding,
+        mediaElement : mediaElement,
+        tab : tab,
+        align : align
+      });
+
+      return i > 0
+        ? tab + align + value
+        : value;
+    }).join(',\n\n');
+
+    return element.name + ' ' + value + ' {\n' + nested + tab + '}';
+  };
+}());
 
 getValue['property group'] = function (settings, element, parent) {
   var value = splitByComma(element.value);

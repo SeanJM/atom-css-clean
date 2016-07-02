@@ -1,27 +1,55 @@
-getValue['media query'] = function (settings, element, parent) {
-  var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  var align = new Array(element.name.length + 2).join(' ');
-  var nested = getValue.shared.nested(settings, element, parent);
-  var value;
+(function () {
+  function flatten(opt, condition) {
+    var padding = new Array(opt.padding + 1 - condition.property.length).join(' ');
 
-  function joinLines(a) {
-    return a.map(function (b, i) {
-      if (i > 0) {
-        return tab + align + b;
-      }
-      return b;
-    }).join('\n');
+    // and (min-device-width : 300px)
+    return condition.operator +
+      ' (' +
+      condition.property +
+      padding +
+      ' : ' +
+      condition.value +
+      ')';
   }
 
-  value = element.value.map(function (a, i) {
-    a = joinLines(a);
+  function joinLines(opt) {
+    return opt.mediaElement
+      .map(function (condition, i) {
+        return condition.mediaType
+          ? condition.mediaType
+          : opt.tab + opt.align + flatten(opt, condition);
+      })
+      .join('\n');
+  }
 
-    if (i > 0) {
-      return tab + align + a;
-    }
+  getValue['media query'] = function (settings, element, parent) {
+    var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
+    var align = new Array(element.name.length + 2).join(' ');
+    var nested = getValue.shared.nested(settings, element, parent);
+    var padding = 0;
+    var value;
 
-    return a;
-  }).join(',\n\n');
+    element.value.forEach(function (a) {
+      a.forEach(function (b) {
+        if (b.property && b.property.length > padding) {
+          padding = b.property.length;
+        }
+      });
+    });
 
-  return element.name + ' ' + value + ' {\n' + nested + tab + '}';
-};
+    value = element.value.map(function (mediaElement, i) {
+      var value = joinLines({
+        padding : padding,
+        mediaElement : mediaElement,
+        tab : tab,
+        align : align
+      });
+
+      return i > 0
+        ? tab + align + value
+        : value;
+    }).join(',\n\n');
+
+    return element.name + ' ' + value + ' {\n' + nested + tab + '}';
+  };
+}());
