@@ -12,7 +12,7 @@ capture['sass mixin'] = function (string, opt) {
   };
   if (args.length) {
     args = args.slice(-1)[0].value;
-    o.arguments = args.split(',').map((a) => a.trim());
+    o.arguments = args.split(',').map(a => a.trim());
   }
   return o;
 };
