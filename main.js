@@ -1150,27 +1150,26 @@ getValue.map = function (settings, parent) {
 getValue.selector = function (settings, element, siblings) {
   var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
   var v = getValue.shared.nested(settings, element, parent);
-  var selector = element.selector.map(function (a, i) {
-    return i > 0 ? tab + a : a;
-  }).join(',\n');
 
-  if (element.depth > 0 && siblings[0] !== element && element.first) {
-    if (!element.last) {
-      return '\n' + tab + selector + ' {\n' + v + tab + '}\n';
+  var selector = element.selector
+    .map((a, i) => i > 0 ? tab + a : a)
+    .join(',\n');
+
+  var content = v.length
+    ? ' {\n' + v + tab + '}'
+    : ' {}';
+
+
+  if (element.depth > 0) {
+    // is First
+    if (siblings[0] === element) {
+      return selector + content;
     }
-    return '\n' + tab + selector + ' {\n' + v + tab + '}';
-  } else if (element.depth > 0 && v.length) {
-    if (!element.last) {
-      return selector + ' {\n' + v + tab + '}\n';
-    }
-    return selector + ' {\n' + v + tab + '}';
-  } else if (v.length && element.depth === 0) {
-    return selector + ' {\n' + v + tab + '}';
-  } else if (element.last) {
-    return selector + ' {}';
-  } else {
-    return selector + ' {}\n';
+
+    return '\n' + tab + selector + content;
   }
+
+  return selector + content;
 };
 
 getValue['character set'] = function (settings, element, parent) {
