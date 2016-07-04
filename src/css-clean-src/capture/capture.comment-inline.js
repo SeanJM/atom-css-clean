@@ -1,9 +1,17 @@
 capture['comment inline'] = function (string, opt) {
-  var m = string.match(/[^\n]+\n/);
+  var value = '';
+  var i = 0;
+  var n = string.length;
+
+  while (['\n', '}'].indexOf(string[i]) === -1 && i < n) {
+    value += string[i];
+    i++;
+  }
+
   return {
     scope : opt.scope,
-    value : m[0].slice(2).trim(),
+    value : value.replace(/^\/\/(\s+|)/, ''),
     depth : opt.depth,
-    strlen : m[0].length
+    strlen : i
   };
 };
