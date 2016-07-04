@@ -131,6 +131,36 @@ $gutter-width : 10px;
         "forms.scss";
 ```
 
+## Make your @each statements easier to read
+
+##### Before
+
+```css
+@each $animal, $color, $cursor in (puma, black, default), (sea-slug, blue, pointer), (egret, white, move) {
+  .#{$animal}-icon {
+    background-image : url('/images/#{$animal}.png');
+    border : 2px solid $color;
+    cursor : $cursor;
+  }
+}
+```
+
+##### After
+
+```css
+@each $animal,
+      $color,
+      $cursor in (puma, black, default),
+      (sea-slug, blue, pointer),
+      (egret, white, move) {
+  .#{$animal}-icon {
+    border           : 2px solid $color;
+    background-image : url('/images/#{$animal}.png');
+    cursor           : $cursor;
+  }
+}
+```
+
 - Shortcut is **CMD/CTRL+ALT+C**
 
 Feel free to contribute.
