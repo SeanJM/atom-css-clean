@@ -1,7 +1,7 @@
 {
   "name": "css-clean",
   "main": "main.js",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "description": "A package for sorting and aligning CSS and SASS.",
   "keywords": [
     "css",
