@@ -131,7 +131,7 @@ $gutter-width : 10px;
         "forms.scss";
 ```
 
-## Make your @each statements easier to read
+## Make your `@each` statements easier to read
 
 ##### Before
 
