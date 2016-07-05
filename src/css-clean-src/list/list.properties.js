@@ -3,12 +3,12 @@
     var vendors = ['-moz-', '-ms-', '-o-', '-webkit-', ''];
     var prefixed;
     var i;
-    for (i = list.length - 1; i > 0; i--) {
-      if (list[i].indexOf('-prefix-') !== -1) {
-        prefixed = vendors.map((a) => list[i].replace('-prefix-', a));
+    list.forEach(function (a, i) {
+      if (a.indexOf('-prefix-') !== -1) {
+        prefixed = vendors.map(p => a.replace('-prefix-', p));
         [].splice.apply(list, [i, 1].concat(prefixed));
       }
-    }
+    });
     return list;
   }
   list.properties = unzip([
@@ -102,6 +102,8 @@
     'background-position',
     'background-size',
     'background-clip',
+    'fill',
+    'stroke',
     'filter',
     'outline',
     'outline-color',
