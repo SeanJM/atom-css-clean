@@ -1346,10 +1346,10 @@ getValue['font face'] = function (settings, element, parent) {
       .join('\n');
   }
 
-  getValue['media query'] = function (settings, element, parent) {
+  getValue['media query'] = function (settings, element, siblings) {
     var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
     var align = new Array(element.name.length + 2).join(' ');
-    var nested = getValue.shared.nested(settings, element, parent);
+    var nested = getValue.shared.nested(settings, element, siblings);
     var padding = 0;
     var value;
 
