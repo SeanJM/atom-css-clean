@@ -264,11 +264,14 @@ capture['property group'] = function (string, opt) {
   var i = 0;
   var m;
   var n = string.length;
+
   while (string[i] !== ';' && i < n) {
     i++;
   }
+
   m = string.substr(0, i).split(':').map(a => a.trim());
   m[1] = m.slice(1).join(':').replace(/\n/g, '').replace(/;$/, '');
+
   return {
     scope : opt.scope,
     name : m[0],
@@ -640,16 +643,20 @@ var list = {};
 (function () {
   function unzip(list) {
     var vendors = ['-moz-', '-ms-', '-o-', '-webkit-', ''];
-    var prefixed;
+    var unzipped = [];
     var i;
-    list.forEach(function (a, i) {
+
+    list.forEach(function (a) {
       if (a.indexOf('-prefix-') !== -1) {
-        prefixed = vendors.map(p => a.replace('-prefix-', p));
-        [].splice.apply(list, [i, 1].concat(prefixed));
+        [].push.apply(unzipped, vendors.map(p => a.replace('-prefix-', p)));
+      } else {
+        unzipped.push(a);
       }
     });
-    return list;
+
+    return unzipped;
   }
+
   list.properties = unzip([
     'z-index',
     'content',
