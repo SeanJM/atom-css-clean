@@ -7,7 +7,7 @@ sortCss.scope = function (settings, content, order) {
   var x;
 
   // Determine if a comment is the first element in the array
-  while (content[start].scope.substr(0, 7) === 'comment' && i < content.length) {
+  while (content[start].scope.substr(0, 7) === 'comment') {
     start += 1;
   }
 
