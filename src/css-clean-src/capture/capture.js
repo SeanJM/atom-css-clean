@@ -1,4 +1,35 @@
 (function () {
+  function isSelector(value) {
+    var selector = /^([\>\@\.\%\#\*a-zA-Z0-9\[\]\+\~\=\"\'\_\-\:\&\n,\(\) ]+)/.test(value);
+    var braceIndex = value.indexOf('{');
+    var semiIndex = value.indexOf(';');
+    var braceBefore = semiIndex > braceIndex && braceIndex !== -1 || semiIndex === -1 && braceIndex !== -1;
+
+    return selector && braceBefore;
+  }
+
+  function isPropertyGroup(value) {
+    var startsWith = /^(\*|)[a-z\- ]+:/.test(value);
+    var property = value.split(':')[0].trim();
+    var inIndexed = list.properties.indexOf(property) > -1;
+    var braceBeforeSemiColon = false;
+    var n = value.length;
+    var i;
+
+    if (startsWith && inIndexed) {
+      return true;
+    }
+
+    while (value[i] !== ';' && i < n) {
+      // Protect is from mismatching SASS eval
+      if (value[i] === '{' && value[i - 1] !== '#') {
+        return false;
+      }
+      i++;
+    }
+    return value[i] === ';';
+  }
+
   function getScope(value) {
     if (value.substr(0, 2) === '//') {
       return 'comment inline';
@@ -66,7 +97,7 @@
       return 'font face';
     }
 
-    if (is.selector(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
+    if (isSelector(value) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(value)) {
       return 'sass placeholder';
     }
 
@@ -78,11 +109,11 @@
       return 'character set';
     }
 
-    if (is.propertyGroup(value)) {
+    if (isPropertyGroup(value)) {
       return 'property group';
     }
 
-    if (is.selector(value)) {
+    if (isSelector(value)) {
       return 'selector';
     }
 
@@ -90,8 +121,8 @@
     return false;
   }
 
-  function capture(value, group, depth) {
-    var scope = getScope(value);
+  function capture(that, group, depth) {
+    var scope = getScope(that.value);
     var i = 0;
     var c;
     var stackOverFlowIntMax = 10000;
