@@ -1,3 +1,5 @@
+var cleanCss = require('src/cleanCss');
+
 (function () {
   module.exports = {
     activate: function(state) {
@@ -5,6 +7,7 @@
         'css-clean:convert': this.convert
       });
     },
+
     convert: function (event) {
       var editor         = this.getModel();
       var editorText     = editor.getText();
@@ -24,6 +27,7 @@
       } else {
         tabChar = 'space';
       }
+
       if (/^source\.css/.test(editor.getRootScopeDescriptor().scopes[0])) {
         clean = cleanCss(editorText)
         .indent(tabSize, tabChar)
