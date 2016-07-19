@@ -1,3 +1,7 @@
+const capture = require('src/capture/capture');
+const sortCss = require('src/sortCss/sortCss');
+const index = require('src/index/index');
+
 function CleanCss(string) {
 
   this.alignTogether = [
@@ -25,7 +29,6 @@ function CleanCss(string) {
   this.align = false;
   this.sortMainScope = false;
   this.sortBlockScope = true;
-  this.propertyGroupOrder = list.properties;
   this.tabSize = 2;
   // This is wrapped this way so that when the object is passed, the string
   // can be mutated -- yes, I want mutation in this case.
@@ -60,6 +63,8 @@ CleanCss.prototype.value = function () {
   var cssObject = capture(this, [], 0);
 
   sortCss(this, cssObject);
+
+  index(cssObject, 0);
 
   return getValue(this, cssObject);
 };
