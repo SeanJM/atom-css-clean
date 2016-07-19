@@ -22,3 +22,5 @@ function splitByComma (value) {
 
   return lines.map(function (a) { return a.trim(); });
 }
+
+module.exports = splitByComma;
