@@ -1,25 +1,26 @@
-getValue['comment block'] = function (settings, element, parent) {
-  var tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  var isTitleStart = /^[\-]+(\s+|)\*\\$/.test(element.value[0].trim());
-  var isTitleEnd = /^\\\*(\s+|)[\-]+$/.test(element.value.slice(-1)[0].trim());
-  var isTitle = isTitleStart && isTitleEnd;
-  var isSpecialComment = element.value[0] === '!';
-  var value;
-  var elementLength = element.value.length;
-
+function commentBlock(that, element, parent) {
   /*
   Titling support
   http://cssguidelin.es/#titling
   */
 
+  const tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
+  const isSpecialComment = element.value[0] === '!';
+  const isTitle = (
+    /^[\-]+(\s+|)\*\\$/.test(element.value[0].trim())
+    && /^\\\*(\s+|)[\-]+$/.test(element.value.slice(-1)[0].trim())
+  );
+
+  let value;
+
   function lineBreak() {
-    var lines = [[]];
-    var $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
-    var x = 0;
-    var v = element.value.join('\n').split(' ').filter(function (a) { return a.length; });
-    var tabLength = tab.length + $tab.length;
-    var i;
-    var n;
+    let lines = [[]];
+    let $tab = new Array(that.tabSize + 1).join(that.tabChar);
+    let x = 0;
+    let v = element.value.join('\n').split(' ').filter(a => a.length);
+    let tabLength = tab.length + $tab.length;
+    let i;
+    let n;
 
     for (i = v.length - 1; i >= 0; i--) {
       if (v[i].length > 1 && v[i].substr(-1) === '\n') {
@@ -33,7 +34,7 @@ getValue['comment block'] = function (settings, element, parent) {
         x = 0;
       } else {
         x += v[i].length + 1;
-        if (x >= settings.lineBreak) {
+        if (x >= that.lineBreak) {
           x = 0;
           v.splice(i, 0, '\n');
         }
@@ -52,25 +53,29 @@ getValue['comment block'] = function (settings, element, parent) {
     }
   }
 
-  if (settings.lineBreak) {
+  if (that.lineBreak) {
     lineBreak();
   }
 
   if (element.value.length > 1) {
     if (isTitle) {
       value = element.value.map(function (line, i) {
-        var $tab = '';
+        let $tab = '';
+
         if (i > 0) {
-          $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
+          $tab = new Array(that.tabSize + 1).join(that.tabChar);
         }
-        return i < elementLength - 1 ? $tab + line + '\n' : $tab + line;
+
+        return i < element.value.length - 1
+          ? $tab + line + '\n'
+          : $tab + line;
       });
       return '/*' + value.join('') + '*/\n';
     } else if (isSpecialComment) {
       value = element.value.map(function (line, i) {
-        var $tab = '';
+        let $tab = '';
         if (i > 0) {
-          $tab = tab + new Array(settings.tabSize + 1).join(settings.tabChar);
+          $tab = tab + new Array(that.tabSize + 1).join(that.tabChar);
         }
         return $tab + line;
       });
@@ -78,7 +83,7 @@ getValue['comment block'] = function (settings, element, parent) {
     }
 
     value = element.value.map(function (line) {
-      var $tab = new Array(settings.tabSize + 1).join(settings.tabChar);
+      let $tab = new Array(that.tabSize + 1).join(that.tabChar);
       return $tab + line;
     }).join('\n');
 
@@ -86,4 +91,6 @@ getValue['comment block'] = function (settings, element, parent) {
   }
 
   return '/* ' + element.value.join('\n') + ' */';
-};
+}
+
+module.exports = commentBlock;
