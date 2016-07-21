@@ -1,5 +1,5 @@
 const nested = require('./nested');
-const lasso = require('src/vendor/lasso.min');
+const lasso = require('lasso-string');
 
 function sassFunction(buffer) {
   let c = nested(buffer);
