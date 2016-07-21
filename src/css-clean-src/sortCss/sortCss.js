@@ -88,11 +88,9 @@ function sortCss(that, cssObject) {
 
   sortScope(that, cssObject, SORT_SHALLOW);
 
-  if (that.sortBlockScope) {
-    for (var i = 0, n = cssObject.length; i < n; i++) {
-      if (Array.isArray(cssObject[i].content) && cssObject[i].content.length) {
-        sortDeep(cssObject[i].content);
-      }
+  for (var i = 0, n = cssObject.length; i < n; i++) {
+    if (Array.isArray(cssObject[i].content) && cssObject[i].content.length) {
+      sortDeep(cssObject[i].content);
     }
   }
 }
