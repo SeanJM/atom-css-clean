@@ -7,7 +7,7 @@ function sassImport(that, element, parent) {
     ? new Array(element.align - element.name.length + 1).join(' ')
     : '';
 
-  if (that.align) {
+  if (that.isAligned) {
     if (element.depth > 0) {
       space = `${tab}${alignSpace}${new Array(element.name.length + 3).join(' ')}`;
     } else {

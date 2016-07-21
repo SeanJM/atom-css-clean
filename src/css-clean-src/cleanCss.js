@@ -1,9 +1,8 @@
-const capture = require('src/capture/capture');
-const sortCss = require('src/sortCss/sortCss');
-const index = require('src/index/index');
+const capture = require('./capture/capture');
+const sortCss = require('./sortCss/sortCss');
+const index = require('./index/index');
 
 function CleanCss(string) {
-
   this.alignTogether = [
     'property group',
     'sass import',
@@ -26,9 +25,7 @@ function CleanCss(string) {
   ];
 
   this.lineBreak = 80;
-  this.align = false;
-  this.sortMainScope = false;
-  this.sortBlockScope = true;
+  this.isAlign = false;
   this.tabSize = 2;
   // This is wrapped this way so that when the object is passed, the string
   // can be mutated -- yes, I want mutation in this case.
@@ -36,7 +33,8 @@ function CleanCss(string) {
 }
 
 CleanCss.prototype.align = function () {
-  this.align = true;
+  this.isAlign = true;
+  return this;
 };
 
 CleanCss.prototype.indent = function (length, type) {
@@ -45,18 +43,12 @@ CleanCss.prototype.indent = function (length, type) {
     : type === 'tab'
       ? '\t'
       : undefined;
+  return this;
 };
 
 CleanCss.prototype.setLineBreak = function (length) {
   this.lineBreak = length;
-};
-
-CleanCss.prototype.sortBlockScope = function () {
-  this.sortBlockScope = true;
-};
-
-CleanCss.prototype.sortMainScope = function () {
-  this.sortMainScope = true;
+  return this;
 };
 
 CleanCss.prototype.value = function () {
@@ -70,5 +62,5 @@ CleanCss.prototype.value = function () {
 };
 
 module.exports = function (string) {
-  return CleanCss(string);
+  return new CleanCss(string);
 };

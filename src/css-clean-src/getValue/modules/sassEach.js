@@ -34,7 +34,7 @@ function sassEach(that, element, parent) {
   let content = nested(that, element, parent);
   let value = splitByComma(element.value);
 
-  let each = that.align
+  let each = that.isAligned
     ? align(element, value, tab)
     : notAlign(element, value, tab);
 
