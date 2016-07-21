@@ -1,4 +1,4 @@
-var cleanCss = require('src/cleanCss');
+var cleanCss = require('./src/css-clean-src/cleanCss');
 
 (function () {
   module.exports = {
@@ -30,13 +30,10 @@ var cleanCss = require('src/cleanCss');
 
       if (/^source\.css/.test(editor.getRootScopeDescriptor().scopes[0])) {
         clean = cleanCss(editorText)
-        .indent(tabSize, tabChar)
-        .setLineBreak(lineBreak)
-        .sortBlockScope()
-        .sortMainScope()
-        .align()
-        .value();
-        //console.log(clean);
+          .indent(tabSize, tabChar)
+          .setLineBreak(lineBreak)
+          .align()
+          .value();
         editor.setText(clean);
         editor.setSelectedBufferRange(selectedBuffer);
       }
