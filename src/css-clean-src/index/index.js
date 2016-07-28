@@ -1,3 +1,12 @@
+const ALIGN_TOGETHER = [
+  'property group',
+  'sass import',
+  'sass include',
+  'sass include arguments',
+  'sass extend',
+  'sass variable assignment',
+];
+
 function index(group, depth) {
   var scopeCount = {};
   var align = 0;
@@ -45,10 +54,10 @@ function index(group, depth) {
 
   // Get alignments for groups that align together
   i = 0;
-  n = settings.alignTogether.length;
+  n = ALIGN_TOGETHER.length;
 
   for (; i < n; i++) {
-    x = settings.alignTogether[i];
+    x = ALIGN_TOGETHER[i];
     if (scopeCount[x] && scopeCount[x].align > align) {
       align = scopeCount[x].align;
     }
@@ -60,7 +69,7 @@ function index(group, depth) {
   for (; i < n; i++) {
     x = group[i];
 
-    if (settings.alignTogether.indexOf(x.scope) !== -1) {
+    if (ALIGN_TOGETHER.indexOf(x.scope) !== -1) {
       x.align = align;
     }
 

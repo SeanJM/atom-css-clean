@@ -3,27 +3,6 @@ const sortCss = require('./sortCss/sortCss');
 const index = require('./index/index');
 
 function CleanCss(string) {
-  this.alignTogether = [
-    'property group',
-    'sass import',
-    'sass include',
-    'sass include arguments',
-    'sass extend',
-    'sass variable assignment',
-  ];
-
-  this.blockScopeOrder = [
-    'sass import',
-    'sass variable assignment',
-    'sass extend',
-    'sass include',
-    'sass include arguments',
-    'property group',
-    'sass include block',
-    'selector',
-    'sass return'
-  ];
-
   this.lineBreak = 80;
   this.isAlign = false;
   this.tabSize = 2;
