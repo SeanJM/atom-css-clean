@@ -24,7 +24,7 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "lasso-string": "^3.47.0"
+    "lasso-string": "3.48.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
