@@ -1,4 +1,4 @@
-const lasso = require('./lasso.min');
+const lasso = require('lasso-string');
 
 function smartSort(property) {
   return function (a, b) {
