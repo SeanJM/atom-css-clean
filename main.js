@@ -33,7 +33,8 @@ var cleanCss = require('./src/css-clean-src/cleanCss');
           .indent(tabSize, tabChar)
           .setLineBreak(lineBreak)
           .align()
-          .value();
+          .valueOf();
+          
         editor.setText(clean);
         editor.setSelectedBufferRange(selectedBuffer);
       }

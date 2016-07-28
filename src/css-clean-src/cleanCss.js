@@ -51,7 +51,7 @@ CleanCss.prototype.setLineBreak = function (length) {
   return this;
 };
 
-CleanCss.prototype.value = function () {
+CleanCss.prototype.valueOf = function () {
   var cssObject = capture(this, [], 0);
 
   sortCss(this, cssObject);
