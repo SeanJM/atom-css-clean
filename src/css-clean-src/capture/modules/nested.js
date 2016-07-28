@@ -1,45 +1,28 @@
+const between = require('lasso-string').between;
+const capture = require('../capture');
+
 function nested(buffer) {
-  let i = 0;
-  let start = 0;
-  let open;
-  let closed;
-  let v;
-  let args;
+  var start = 0;
+  var end = 0;
+  var value = '';
+  var args;
 
-  function getArguments(i) {
-    while (buffer.string[i] !== '{') {
-      i += 1;
-    }
-
-    if (string[i - 1] === '#') {
-      i = getArguments(i + 1);
-    }
-
-    return i;
+  while (
+    buffer.string[start] !== '{'
+    && buffer.string[start - 1] !== '#'
+  ) {
+    start++;
   }
 
-  args = buffer.string.substr(0, getArguments(0));
+  args = buffer.string.substr(0, start).trim();
+  value = between(buffer.string.substr(start), '{', '}');
 
-  start = args.length;
-  o = buffer.string.substr(start, i).match(/\{/g) || [];
-  c = buffer.string.substr(start, i).match(/\}/g) || [];
-  i = 0;
+  buffer.string = buffer.string.substr(start + value.end);
 
-  while (i < buffer.string.length) {
-    i += 1;
-    o = buffer.string.substr(start, i).match(/\{/g) || [];
-    c = buffer.string.substr(start, i).match(/\}/g) || [];
-
-    if (o.length > 0 && o.length === c.length) {
-      v = lasso.between(buffer.string.substr(start, i), '{', '}').slice(-1)[0];
-
-      return {
-        content : capture(v.value.trim(), [], opt.depth + 1),
-        arguments : args.trim(),
-        length : args.length + v.capture.index + v.capture.length,
-      };
-    }
-  }
+  return {
+    content : value[1].trim(),
+    arguments : args,
+  };
 }
 
 module.exports = nested;
