@@ -1,3 +1,5 @@
+const PROPERTIES_LIST = require('../PROPERTIES_LIST');
+
 function isSelector(value) {
   var braceIndex = value.indexOf('{');
   var semiIndex = value.indexOf(';');
@@ -16,7 +18,7 @@ function isSelector(value) {
 function isPropertyGroup(value) {
   var startsWith = /^(\*|)[a-z\- ]+:/.test(value);
   var property = value.split(':')[0].trim();
-  var inIndexed = list.properties.indexOf(property) > -1;
+  var inIndexed = PROPERTIES_LIST.indexOf(property) > -1;
   var braceBeforeSemiColon = false;
   var n = value.length;
   var i;
