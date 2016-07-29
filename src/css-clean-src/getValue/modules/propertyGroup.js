@@ -1,6 +1,6 @@
-const splitByComma = require('src/vendor/splitByComma');
+const splitByComma = require('../../vendor/splitByComma');
 
-function properyGroup(that, element, parent) {
+function propertyGroup(that, element, parent) {
   const tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
 
   let value = splitByComma(element.value);
