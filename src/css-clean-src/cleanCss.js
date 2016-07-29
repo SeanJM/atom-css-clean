@@ -1,6 +1,7 @@
 const capture = require('./capture/capture');
 const sortCss = require('./sortCss/sortCss');
 const index = require('./index/index');
+const getValue = require('./getValue/getValue');
 
 function CleanCss(string) {
   this.lineBreak = 80;
