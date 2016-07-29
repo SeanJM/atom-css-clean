@@ -1,5 +1,7 @@
 const PROPERTIES_LIST = require('../PROPERTIES_LIST');
 
+var prototype = {};
+
 function isSelector(value) {
   var braceIndex = value.indexOf('{');
   var semiIndex = value.indexOf(';');
@@ -150,7 +152,7 @@ function capture(that, group, depth) {
           scope : scope,
           depth : depth
         },
-        capture[scope](that.value)
+        prototype[scope](that.value, depth)
       )
     );
     scope = getScope(that.value);
@@ -165,27 +167,27 @@ function capture(that, group, depth) {
 }
 
 // CSS
-capture['character set'] = require('./modules/characterSet');
-capture['comment block'] = require('./modules/commentBlock');
-capture['comment inline'] = require('./modules/commentInline');
-capture['font face'] = require('./modules/fontFace');
-capture['media query'] = require('./modules/mediaQuery');
-capture['property group'] = require('./modules/propertyGroup');
-capture.selector = require('./modules/selector');
+prototype['character set'] = require('./modules/characterSet');
+prototype['comment block'] = require('./modules/commentBlock');
+prototype['comment inline'] = require('./modules/commentInline');
+prototype['font face'] = require('./modules/fontFace');
+prototype['media query'] = require('./modules/mediaQuery');
+prototype['property group'] = require('./modules/propertyGroup');
+prototype.selector = require('./modules/selector');
 
 // SASS
-capture['sass each'] = require('./modules/sassEach');
-capture['sass extend'] = require('./modules/sassExtend');
-capture['sass for'] = require('./modules/sassFor');
-capture['sass function'] = require('./modules/sassFunction');
-capture['sass if'] = require('./modules/sassIf');
-capture['sass import'] = require('./modules/sassImport');
-capture['sass include arguments'] = require('./modules/sassIncludeArguments');
-capture['sass include block'] = require('./modules/sassIncludeBlock');
-capture['sass include'] = require('./modules/sassInclude');
-capture['sass mixin'] = require('./modules/sassMixin');
-capture['sass placeholder'] = require('./modules/sassPlaceholder');
-capture['sass return'] = require('./modules/sassReturn');
-capture['sass variable assignment'] = require('./modules/sassVariableAssignment');
+prototype['sass each'] = require('./modules/sassEach');
+prototype['sass extend'] = require('./modules/sassExtend');
+prototype['sass for'] = require('./modules/sassFor');
+prototype['sass function'] = require('./modules/sassFunction');
+prototype['sass if'] = require('./modules/sassIf');
+prototype['sass import'] = require('./modules/sassImport');
+prototype['sass include arguments'] = require('./modules/sassIncludeArguments');
+prototype['sass include block'] = require('./modules/sassIncludeBlock');
+prototype['sass include'] = require('./modules/sassInclude');
+prototype['sass mixin'] = require('./modules/sassMixin');
+prototype['sass placeholder'] = require('./modules/sassPlaceholder');
+prototype['sass return'] = require('./modules/sassReturn');
+prototype['sass variable assignment'] = require('./modules/sassVariableAssignment');
 
 module.exports = capture;
