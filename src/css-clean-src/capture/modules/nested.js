@@ -1,11 +1,14 @@
+const path = require('path');
 const between = require('lasso-string').between;
-const capture = require('../capture');
 
-function nested(buffer) {
-  var start = 0;
-  var end = 0;
-  var value = '';
-  var args;
+function nested(buffer, depth) {
+  const capture = require('../capture'); // will only work when called at run time
+
+  let start = 0;
+  let end = 0;
+  let value = '';
+  let args;
+  let that;
 
   while (
     buffer.string[start] !== '{'
@@ -19,8 +22,15 @@ function nested(buffer) {
 
   buffer.string = buffer.string.substr(start + value.end);
 
+  // 'value' is the buffer
+  that = {
+    value : {
+      string : value[1].trim()
+    }
+  };
+
   return {
-    content : value[1].trim(),
+    content : capture(that, [], depth),
     arguments : args,
   };
 }
