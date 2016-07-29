@@ -1,6 +1,8 @@
+const nested = require('./nested');
+
 function selector(settings, element, siblings) {
   let tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  let v = nested(settings, element, parent);
+  let v = nested(settings, element, siblings);
 
   let selector = element.selector
     .map((a, i) => i > 0 ? tab + a : a).join(',\n');
