@@ -10,6 +10,7 @@ function nested(that, element, parent) {
   const tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
   const $tab = new Array(that.tabSize + 1).join(that.tabChar);
   const scopeList = element.content.map(a => a.scope);
+  const mapValue = require('./mapValue');
 
   let newGroupIndex = [];
   let i = 0;
