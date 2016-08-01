@@ -1,3 +1,5 @@
+const smartSort = require('../../vendor/smartSort');
+
 let sortEach = {};
 
 sortEach['sass import'] = function (that, element) {
