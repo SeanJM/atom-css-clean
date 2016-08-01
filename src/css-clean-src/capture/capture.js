@@ -39,91 +39,90 @@ function isPropertyGroup(value) {
   return value[i] === ';';
 }
 
-function getScope(value) {
-  var s = value.string;
-
-  if (s.substr(0, 2) === '//') {
+function getScope(string) {
+  console.log(string);
+  if (string.substr(0, 2) === '//') {
     return 'comment inline';
   }
 
-  if (s.substr(0, 2) === '/*')
+  if (string.substr(0, 2) === '/*')
     return 'comment block';
 
-  if (/^\$[^:]+?:[^;]+?;/.test(value)) {
+  if (/^\$[^:]+?:[^;]+?;/.test(string)) {
     return 'sass variable assignment';
   }
 
-  if (s.substring(0, 7) === '@extend') {
+  if (string.substring(0, 7) === '@extend') {
     return 'sass extend';
   }
 
-  if (s.substring(0, 7) === '@import') {
+  if (string.substring(0, 7) === '@import') {
     return 'sass import';
   }
 
-  if (s.substring(0, 8) === '@include') {
-    if (/^@include\s+[a-zA-Z0-9\-\_\s]+\{/.test(value)) {
+  if (string.substring(0, 8) === '@include') {
+    if (/^@include\s+[a-zA-Z0-9\-\_\s]+\{/.test(string)) {
       return 'sass include block';
     }
-    if (/^@include\s+[a-zA-Z0-9\-\_\s]+\(/.test(value)) {
+    if (/^@include\s+[a-zA-Z0-9\-\_\s]+\(/.test(string)) {
       return 'sass include arguments';
     }
     return 'sass include';
   }
 
-  if (s.substring(0, 6) === '@mixin') {
+  if (string.substring(0, 6) === '@mixin') {
     return 'sass mixin';
   }
 
-  if (s.substring(0, 9) === '@function') {
+  if (string.substring(0, 9) === '@function') {
     return 'sass function';
   }
 
-  if (s.substring(0, 7) === '@return') {
+  if (string.substring(0, 7) === '@return') {
     return 'sass return';
   }
 
-  if (s.substring(0, 3) === '@if') {
+  if (string.substring(0, 3) === '@if') {
     return 'sass if';
   }
 
-  if (s.substring(0, 4) === '@for') {
+  if (string.substring(0, 4) === '@for') {
     return 'sass for';
   }
 
-  if (s.substring(0, 5) === '@each') {
+  if (string.substring(0, 5) === '@each') {
     return 'sass each';
   }
 
-  if (/^@else[ ]+if/.test(s)) {
+  if (/^@else[ ]+if/.test(string)) {
     return 'sass if';
   }
 
-  if (s.substring(0, 5) === '@else') {
+  if (string.substring(0, 5) === '@else') {
     return 'sass if';
   }
 
-  if (s.substring(0, 10) === '@font-face') {
+  if (string.substring(0, 10) === '@font-face') {
     return 'font face';
   }
 
-  if (isSelector(s) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(s)) {
+  if (isSelector(string) && /^%|^[^\%^{]+?%[^\{]+?\{/.test(string)) {
     return 'sass placeholder';
   }
 
-  if (s.substring(0, 6) === '@media') {
+  if (string.substring(0, 6) === '@media') {
     return 'media query';
   }
 
-  if (s.substring(0, 8) === '@charset') {
+  if (string.substring(0, 8) === '@charset') {
     return 'character set';
   }
 
-  if (isPropertyGroup(s)) {
+  if (isPropertyGroup(string)) {
     return 'property group';
   }
 
-  if (isSelector(s)) {
+  if (isSelector(string)) {
     return 'selector';
   }
 
@@ -132,7 +131,7 @@ function getScope(value) {
 }
 
 function capture(that, group, depth) {
-  var scope = getScope(that.value);
+  var scope = getScope(that.buffer.string);
   var i = 0;
   var stackOverFlowIntMax = 10000;
 
@@ -152,12 +151,16 @@ function capture(that, group, depth) {
           scope : scope,
           depth : depth
         },
-        prototype[scope](that.value, depth)
+        prototype[scope](that.buffer, depth)
       )
     );
-    scope = getScope(that.value);
+
+    that.buffer.string = that.buffer.string.trim();
+    scope = getScope(that.buffer.string);
     i++;
   }
+
+  console.log(group);
 
   if (i === stackOverFlowIntMax) {
     throw 'CSS Clean has stopped: There must be a problem with your CSS.';

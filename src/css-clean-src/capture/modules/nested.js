@@ -24,7 +24,7 @@ function nested(buffer, depth) {
 
   // 'value' is the buffer
   that = {
-    value : {
+    buffer : {
       string : value[1].trim()
     }
   };

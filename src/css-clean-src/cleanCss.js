@@ -9,7 +9,7 @@ function CleanCss(string) {
   this.tabSize = 2;
   // This is wrapped this way so that when the object is passed, the string
   // can be mutated -- yes, I want mutation in this case.
-  this.value = { string : string.trim() };
+  this.buffer = { string : string.trim() };
 }
 
 CleanCss.prototype.align = function () {
