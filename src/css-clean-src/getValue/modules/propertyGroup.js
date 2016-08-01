@@ -16,7 +16,7 @@ function propertyGroup(that, element, parent) {
 
     padding = new Array(element.align - element.name.length + 2).join(' ');
 
-    return `${element.name} ${padding} : ${value};`;
+    return `${element.name}${padding}: ${value};`;
   }
 
   return element.name + ': ' + element.value + ';';
