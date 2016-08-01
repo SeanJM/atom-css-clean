@@ -1,7 +1,5 @@
-const nested = require('./nested');
-
 function flatten(opt, condition) {
-  var padding = new Array(opt.padding + 1 - condition.property.length).join(' ');
+  let padding = new Array(opt.padding + 1 - condition.property.length).join(' ');
   // and (min-device-width : 300px)
   return `${condition.operator} (${condition.property}${padding} : ${condition.value})`;
 }
@@ -17,11 +15,13 @@ function joinLines(opt) {
 }
 
 function mediaQuery(that, element, siblings) {
-  var tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
-  var align = new Array(element.name.length + 2).join(' ');
-  var nested = nested(that, element, siblings);
-  var padding = 0;
-  var value;
+  const nested = require('./nested');
+
+  let tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
+  let align = new Array(element.name.length + 2).join(' ');
+  let nest = nested(that, element, siblings);
+  let padding = 0;
+  let value;
 
   element.value.forEach(function (a) {
     a.forEach(function (b) {
@@ -32,7 +32,7 @@ function mediaQuery(that, element, siblings) {
   });
 
   value = element.value.map(function (mediaElement, i) {
-    var value = joinLines({
+    let value = joinLines({
       padding : padding,
       mediaElement : mediaElement,
       tab : tab,
@@ -44,7 +44,7 @@ function mediaQuery(that, element, siblings) {
       : value;
   }).join(',\n');
 
-  return `${element.name} ${value} {\n ${nested} ${tab}}`;
+  return `${element.name} ${value} {\n ${nest} ${tab}}`;
 }
 
 module.exports = mediaQuery;
