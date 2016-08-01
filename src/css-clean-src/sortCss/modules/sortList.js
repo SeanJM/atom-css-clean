@@ -1,7 +1,7 @@
 let sortList = {};
 
 sortList['property group'] = function (that, list) {
-  var order = require('src/PROPERTIES_LIST');
+  var order = require('../../PROPERTIES_LIST');
 
   list.sort(function (a, b) {
     var ai = order.indexOf(a.name);
