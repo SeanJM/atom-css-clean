@@ -1,4 +1,5 @@
 const nested = require('./nested');
+const splitByComma = require('../../vendor/splitByComma');
 
 function pushLine(lines, v, i) {
   let x;
