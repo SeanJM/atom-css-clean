@@ -1,3 +1,5 @@
+const lasso = require('lasso-string');
+
 function commentBlock(buffer) {
   let i = 0;
   let s = buffer.string.substring(0, i);

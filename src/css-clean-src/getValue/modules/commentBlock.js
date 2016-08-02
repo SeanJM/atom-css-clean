@@ -1,3 +1,5 @@
+const lasso = require('lasso-string');
+
 function commentBlock(that, element, parent) {
   /*
   Titling support
