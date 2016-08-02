@@ -23,7 +23,7 @@ const SORT_SHALLOW = [
   'sass placeholder',
 ];
 
-function sortScope(that, content) {
+function sortScope(that, content, order) {
   var displace = {};
   var start = 0;
   var name;
@@ -75,22 +75,24 @@ function sortScope(that, content) {
   }
 }
 
-function sortCss(that, cssObject) {
-  function sortDeep(content) {
-    sortScope(that, content, SORT_DEEP);
+function sortDeep(that, content) {
+  sortScope(that, content, SORT_DEEP);
 
-    for (var i = 0, n = content.length; i < n; i++) {
-      if (Array.isArray(content[i].content) && content[i].content.length) {
-        sortDeep(content[i].content);
-      }
+  for (var i = 0, n = content.length; i < n; i++) {
+    if (Array.isArray(content[i].content) && content[i].content.length) {
+      sortDeep(that, content[i].content);
     }
   }
+}
 
+function sortCss(that, cssObject) {
   sortScope(that, cssObject, SORT_SHALLOW);
 
   for (var i = 0, n = cssObject.length; i < n; i++) {
     if (Array.isArray(cssObject[i].content) && cssObject[i].content.length) {
-      sortDeep(cssObject[i].content);
+      sortDeep(that, cssObject[i].content);
     }
   }
 }
+
+module.exports = sortCss;

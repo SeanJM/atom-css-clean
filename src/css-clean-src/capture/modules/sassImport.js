@@ -8,3 +8,5 @@ function sassImport(buffer) {
     value : m[2].split(',').map(a => a.trim().replace(/^\'|\'$|^\"|\"$/g, ''))
   };
 }
+
+module.exports = sassImport;

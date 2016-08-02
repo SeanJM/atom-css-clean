@@ -11,3 +11,5 @@ function sassIncludeBlock(buffer) {
     value : c.arguments.split(' ')[1],
   };
 }
+
+module.exports = sassIncludeBlock;

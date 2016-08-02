@@ -1,5 +1,5 @@
 function sassExtend(buffer) {
-  let m = buffer.value.match(/^(@extend)([^;]+?);/);
+  let m = buffer.string.match(/^(@extend)([^;]+?);/);
 
   buffer.string = buffer.string.substr(m[0].length);
 
@@ -8,3 +8,5 @@ function sassExtend(buffer) {
     value : m[2].trim()
   };
 }
+
+module.exports = sassExtend;

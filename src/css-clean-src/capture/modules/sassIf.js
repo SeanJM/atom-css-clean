@@ -14,3 +14,5 @@ function sassIf(buffer) {
       : undefined
   };
 }
+
+module.exports = sassIf;

@@ -15,3 +15,5 @@ function sassFunction(buffer) {
     arguments : args.split(',').map(function (a) { return a.trim(); })
   };
 }
+
+module.exports = sassFunction;

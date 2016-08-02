@@ -11,3 +11,5 @@ function sassEach(buffer) {
     value : m.slice(1).map(a => a.trim()).filter(a => a.length).join(' ')
   };
 }
+
+module.exports = sassEach;
