@@ -9,7 +9,9 @@ function sassMixin(buffer) {
   buffer.string = buffer.string.substr(c.length);
 
   return {
-    arguments : args ? args[1].split(',').map(a => a.trim()) : '',
+    arguments : args
+      ? args[1].split(',').map(a => a.trim())
+      : false,
     content : c.content,
     name : m[1],
     value : m[2].trim()
