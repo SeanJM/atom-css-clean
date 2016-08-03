@@ -6,20 +6,14 @@ function sassMixin(buffer) {
   let args = lasso.between(c.arguments, '(', ')');
   let m = c.arguments.match(/(@mixin)[ ]+([^\(]+)/);
 
-  let o = {
+  buffer.string = buffer.string.substr(c.length);
+
+  return {
+    arguments : args ? args[1].split(',').map(a => a.trim()) : '',
     content : c.content,
     name : m[1],
     value : m[2].trim()
   };
-
-  buffer.string = buffer.string.substr(c.length);
-
-  if (args.length) {
-    args = args.slice(-1)[0].value;
-    o.arguments = args.split(',').map(a => a.trim());
-  }
-
-  return o;
 }
 
 module.exports = sassMixin;
