@@ -40,7 +40,6 @@ function isPropertyGroup(value) {
 }
 
 function getScope(string) {
-  console.log(string);
   if (string.substr(0, 2) === '//') {
     return 'comment inline';
   }
@@ -156,11 +155,11 @@ function capture(that, group, depth) {
     );
 
     that.buffer.string = that.buffer.string.trim();
+
+
     scope = getScope(that.buffer.string);
     i++;
   }
-
-  console.log(group);
 
   if (i === stackOverFlowIntMax) {
     throw 'CSS Clean has stopped: There must be a problem with your CSS.';
