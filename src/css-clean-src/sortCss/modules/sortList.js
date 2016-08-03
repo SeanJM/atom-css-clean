@@ -1,3 +1,5 @@
+const smartSort = require('../../vendor/smartSort');
+
 let sortList = {};
 
 sortList['property group'] = function (that, list) {
