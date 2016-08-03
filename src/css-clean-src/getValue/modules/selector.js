@@ -1,8 +1,8 @@
-function selector(settings, element, siblings) {
+function selector(that, element, siblings) {
   const nested = require('./nested');
 
-  let tab = new Array((element.depth * settings.tabSize) + 1).join(settings.tabChar);
-  let v = nested(settings, element, siblings);
+  let tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
+  let v = nested(that, element, siblings);
 
   let selector = element.selector
     .map(
@@ -15,8 +15,6 @@ function selector(settings, element, siblings) {
   let content = v.length
     ? ' {\n' + v + tab + '}'
     : ' {}';
-
-  console.log(element.selector);
 
   return element.depth > 0
     ? siblings[0] === element
