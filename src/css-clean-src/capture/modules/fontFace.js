@@ -1,7 +1,7 @@
 const nested = require('./nested');
 
 function fontFace(buffer) {
-  let c = nested(buffer.string);
+  let c = nested(buffer);
 
   buffer.string = buffer.string.substr(c.length);
 
