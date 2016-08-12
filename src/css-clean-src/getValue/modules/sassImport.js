@@ -7,23 +7,19 @@ function sassImport(that, element, parent) {
     ? new Array(element.align - element.name.length + 1).join(' ')
     : '';
 
-  if (that.isAligned) {
-    if (element.depth > 0) {
-      space = `${tab}${alignSpace}${new Array(element.name.length + 3).join(' ')}`;
-    } else {
-      space = `${tab}${alignSpace}${new Array(element.name.length + 1).join(' ')}`;
-    }
-
-    element.value = element.value.map(function (a, i) {
-      return i > 0
-        ? `${space}"${a}"`
-        : element.depth > 0 && parent.length > 1
-          ? `  "${a}"`
-          : `"${a}"`;
-    });
-  } else {
-    element.value = element.value.map(a => `"${a}"`);
+  if (element.depth > 0) {
+    space = `${tab}${alignSpace}${new Array(element.name.length + 3).join(' ')}`;
+  } else {
+    space = `${tab}${alignSpace}${new Array(element.name.length + 1).join(' ')}`;
   }
+
+  element.value = element.value.map(function (a, i) {
+    return i > 0
+      ? `${space}"${a}"`
+      : element.depth > 0 && parent.length > 1
+        ? `  "${a}"`
+        : `"${a}"`;
+  });
 
   v = element.value.join(',\n');
 
