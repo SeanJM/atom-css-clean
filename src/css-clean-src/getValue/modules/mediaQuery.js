@@ -44,7 +44,7 @@ function mediaQuery(that, element, siblings) {
       : value;
   }).join(',\n');
 
-  return `${element.name} ${value} {\n ${nest} ${tab}}`;
+  return `${element.name} ${value} {\n${nest}${tab}}`;
 }
 
 module.exports = mediaQuery;
