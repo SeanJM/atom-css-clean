@@ -1,4 +1,5 @@
 const smartSort = require('../../vendor/smartSort');
+const splitByComma = require('../../vendor/splitByComma');
 
 let sortList = {};
 
