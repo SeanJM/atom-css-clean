@@ -3,7 +3,7 @@ const lasso = require('lasso-string');
 
 function sassFunction(buffer) {
   let c = nested(buffer);
-  let args = lasso.between(c.arguments, '(', ')').slice(-1)[0].value;
+  let args = lasso.between(c.arguments, '(', ')');
   let m = c.arguments.match(/(@function)\s+([^)]+?)\(/);
 
   buffer.string = buffer.string.substr(c.length);
@@ -12,7 +12,9 @@ function sassFunction(buffer) {
     content : c.content,
     name : m[1],
     value : m[2].trim(),
-    arguments : args.split(',').map(function (a) { return a.trim(); })
+    arguments : args
+      ? args[1].split(',').map(a => a.trim())
+      : ''
   };
 }
 

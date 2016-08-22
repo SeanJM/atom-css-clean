@@ -14,12 +14,12 @@ function commentBlock(buffer) {
     c = s.match(/\*\//g) || [];
 
     if (o.length > 0 && o.length === c.length) {
-      v = lasso.between(s, '/*', '*/').slice(-1)[0];
+      v = lasso.between(s, '/*', '*/');
 
-      buffer.string = buffer.string.substr(v.capture.index + v.capture.length);
+      buffer.string = buffer.string.substr(v.start + v.end);
 
       return {
-        value : v.value.trim().split('\n'),
+        value : v[1].trim().split('\n'),
       };
     }
   }
