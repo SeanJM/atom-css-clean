@@ -107,6 +107,7 @@ let PROPERTIES_LIST = unzip([
   'background-clip',
   'fill',
   'stroke',
+  'stroke-miterlimit',
   'filter',
   'outline',
   'outline-color',
