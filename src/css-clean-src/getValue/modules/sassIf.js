@@ -1,7 +1,10 @@
+
 function sassIf(that, element, parent) {
+  const mapValue = require('./mapValue');
+  const getValue = require('../getValue');
+
   const tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
   const $tab = new Array(that.tabSize + 1).join(that.tabChar);
-
   const delegate = {
     "@if" : function () {
       let content = mapValue(that, element.content)
@@ -20,8 +23,7 @@ function sassIf(that, element, parent) {
     },
 
     "@else" : function () {
-      let content = getValue
-        .map(that, element.content)
+      let content = mapValue(that, element.content)
         .map(value => `${tab}${$tab}${value}`).join(';\n');
 
       return `${element.name} {\n${content}\n${tab}}\n`;
