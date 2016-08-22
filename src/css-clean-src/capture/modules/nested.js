@@ -7,14 +7,20 @@ function nested(buffer, depth) {
   let start = 0;
   let end = 0;
   let value = '';
+  var bool = true;
+  let n = buffer.string.length;
   let args;
-  let that;
 
-  while (
-    buffer.string[start] !== '{'
-    && buffer.string[start - 1] !== '#'
-  ) {
+  while (bool) {
     start++;
+    if ((
+      buffer.string[start] === '{'
+      && buffer.string.substr(start - 1, 2) !== '#{'
+      ) || (
+      start === n
+    )) {
+      bool = false;
+    }
   }
 
   args = buffer.string.substr(0, start).trim();
@@ -22,15 +28,8 @@ function nested(buffer, depth) {
 
   buffer.string = buffer.string.substr(start + value.end);
 
-  // 'value' is the buffer
-  that = {
-    buffer : {
-      string : value[1].trim()
-    }
-  };
-
   return {
-    content : capture(that, [], depth),
+    content : capture({ buffer : { string : value[1].trim() } }, [], depth),
     arguments : args,
   };
 }
