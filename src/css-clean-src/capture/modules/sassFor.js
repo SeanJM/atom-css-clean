@@ -8,6 +8,7 @@ function sassFor(buffer) {
 
   return {
     name : m[0],
+    content : c.content,
     value : m.slice(1).filter(a => a.length).join(' ')
   };
 }
