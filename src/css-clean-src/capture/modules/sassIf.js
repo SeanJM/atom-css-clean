@@ -1,7 +1,7 @@
 const nested = require('./nested');
 
-function sassIf(buffer) {
-  let c = nested(buffer);
+function sassIf(buffer, depth) {
+  let c = nested(buffer, depth);
   let m = c.arguments.match(/(@if|@else[ ]+if|@else)([\s\S]+|)/);
 
   buffer.string = buffer.string.substr(c.length);

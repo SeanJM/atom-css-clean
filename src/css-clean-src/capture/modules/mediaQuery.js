@@ -31,8 +31,8 @@ function getChunk(line, startChr, untilChr) {
   return chunk.trim();
 }
 
-function mediaQuery(buffer) {
-  let c = nested(buffer);
+function mediaQuery(buffer, depth) {
+  let c = nested(buffer, depth);
   let m = c.arguments.split(' ');
   let name = m[0];
   let value = m.slice(1).join(' ').replace(/\s+|\n/g, ' ');

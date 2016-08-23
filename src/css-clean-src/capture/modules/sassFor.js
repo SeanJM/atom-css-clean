@@ -1,7 +1,7 @@
 const nested = require('./nested');
 
-function sassFor(buffer) {
-  let c = nested(buffer);
+function sassFor(buffer, depth) {
+  let c = nested(buffer, depth);
   let m = c.arguments.split(' ');
 
   buffer.string = buffer.string.substr(c.length);

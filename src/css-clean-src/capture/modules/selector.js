@@ -1,7 +1,7 @@
 const nested = require('./nested');
 
-function selector(buffer) {
-  let c = nested(buffer);
+function selector(buffer, depth) {
+  let c = nested(buffer, depth);
 
   buffer.string = buffer.string.substr(c.length);
 

@@ -1,7 +1,7 @@
 const nested = require('./nested');
 
-function sassIncludeBlock(buffer) {
-  let c = nested(buffer);
+function sassIncludeBlock(buffer, depth) {
+  let c = nested(buffer, depth);
 
   buffer.string = buffer.string.substr(c.length);
 
