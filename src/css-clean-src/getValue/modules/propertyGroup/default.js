@@ -9,9 +9,11 @@ module.exports = function (that, element, siblings) {
 
   if (element.align) {
     value = value
-      .map(function (a, i) {
-        return i === 0 ? a : tab + align + a;
-      })
+      .map(
+        (a, i) => i === 0
+          ? a
+          : tab + align + a
+      )
       .join(',\n');
 
     padding = new Array(element.align - element.name.length + 2).join(' ');
