@@ -1,25 +1,14 @@
-const splitByComma = require('../../vendor/splitByComma');
+const format = {
+  'background' : require('./propertyGroup/background.js'),
+  'background-image' : require('./propertyGroup/background.js'),
+  default : require('./propertyGroup/default.js'),
+};
 
-function propertyGroup(that, element, parent) {
-  const tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
-
-  let value = splitByComma(element.value);
-  let padding;
-
-  if (element.align) {
-    value = value
-      .map(function (a, i) {
-        let align = new Array(element.align + 4).join(' ');
-        return i === 0 ? a : tab + align + a;
-      })
-      .join(',\n');
-
-    padding = new Array(element.align - element.name.length + 2).join(' ');
-
-    return `${element.name}${padding}: ${value};`;
+function propertyGroup(that, element, siblings) {
+  if (typeof format[element.name] === 'function') {
+    return format[element.name](that, element, siblings);
   }
-
-  return element.name + ': ' + element.value + ';';
+  return format.default(that, element, siblings);
 }
 
 module.exports = propertyGroup;
