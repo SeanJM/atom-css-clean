@@ -32,7 +32,7 @@ function sortScope(that, content, order) {
   var x;
 
   // Determine if a comment is the first element in the array
-  while (content[start].scope.substr(0, 7) === 'comment') {
+  while (content[start] && content[start].scope.substr(0, 7) === 'comment') {
     start += 1;
   }
 
