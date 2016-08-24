@@ -161,6 +161,27 @@ $gutter-width : 10px;
 }
 ```
 
+## Gradients
+
+##### Before
+
+```css
+  .class {
+    background : linear-gradient(rgba(33, 34, 30, 0.1), rgba(33, 34, 30, 0.1));
+  }
+```
+
+##### After
+
+```css
+  .class {
+    background : linear-gradient(
+                   rgba(33, 34, 30, 0.1),
+                   rgba(33, 34, 30, 0.1)
+                 );
+  }
+```
+
 - Shortcut is **CMD/CTRL+ALT+C**
 
 Feel free to contribute.
