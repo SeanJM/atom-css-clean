@@ -53,7 +53,7 @@ function formatSpecialComment(that, element) {
         if (i > 0) {
           $tab = tab + that.getTab(element.depth + 1);
         }
-        return $tab + line;
+        return $tab + line.trim();
       }).join('\n') + '\n'
       : element.value.join('\n') + ' '
     ) + '*/';
