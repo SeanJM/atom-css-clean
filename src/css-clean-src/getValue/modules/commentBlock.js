@@ -64,17 +64,17 @@ function formatDefault(that, element) {
 
   splitByLineBreak(that, element);
 
-  return (
-    '/**\n' +
+  return element.value.length > 1
+    ? '/**\n' +
 
     element.value.map(function (line, i) {
       let $tab = that.getTab(element.depth);
-      line = '* ' + line.trim();
+      line = ' * ' + line.trim();
       return $tab + line;
     }).join('\n') +
 
-    '\n' + tab + '*/'
-  );
+    '\n' + tab + ' */'
+  : '/* ' + element.value.join('') + ' */';
 }
 
 function isSpecialComment(element) {
