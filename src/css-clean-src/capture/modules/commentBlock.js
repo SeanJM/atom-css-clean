@@ -19,7 +19,7 @@ function commentBlock(buffer) {
       buffer.string = buffer.string.substr(v.start + v.end);
 
       return {
-        value : v[1].trim().split('\n'),
+        value : v[1].substr(1).trim().split('\n'),
       };
     }
   }
