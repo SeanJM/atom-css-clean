@@ -35,6 +35,10 @@ CleanCss.prototype.valueOf = function () {
   return getValue(this, cssObject);
 };
 
+CleanCss.prototype.getTab = function (depth) {
+  return new Array((depth * this.tabSize) + 1).join(this.tabChar);
+};
+
 module.exports = function (string) {
   return new CleanCss(string);
 };

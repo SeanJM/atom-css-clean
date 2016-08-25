@@ -1,14 +1,13 @@
 const l = require('lasso-string');
 const splitByComma = require('../../../vendor/splitByComma');
-const getTab = require('../../../vendor/getTab');
 
 function isGradient(value) {
   return /^(-(webkit|moz|o|ms)-|)(linear|radial)-gradient/.test(value);
 }
 
 function formatLinearGradient(that, element, siblings) {
-  const singleTab = getTab(that, 1);
-  const tab = getTab(that, element.depth);
+  const singleTab = that.getTab(1);
+  const tab = that.getTab(element.depth);
   let value = splitByComma(element.value);
   let align = tab + new Array(element.align + 4).join(' ');
   let padding;
