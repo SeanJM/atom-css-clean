@@ -28,7 +28,7 @@ function formatSectionTitle(that, element) {
     let $tab = '';
 
     if (i > 0) {
-      $tab = that.getTab(element.depth + 1);
+      $tab = that.getTab(element.depth);
     }
 
     return i < element.value.length - 1
