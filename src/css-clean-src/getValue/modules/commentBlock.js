@@ -4,7 +4,7 @@ function splitByLineBreak(that, element) {
   let lines = [];
   let lineIndex = 0;
   let tabLength = that.getTab(element.depth + 2).length;
-  
+
   let raw = element.value
     .map(a => a.replace(/^(\s+|)\*/g, ''))
     .join(' ')
@@ -45,18 +45,23 @@ function formatSectionTitle(that, element) {
 
 function formatSpecialComment(that, element) {
   const tab = that.getTab(element.depth);
-  let value = element.value.map(function (line, i) {
-    let $tab = '';
-    if (i > 0) {
-      $tab = tab + that.getTab(element.depth + 1);
-    }
-    return $tab + line;
-  });
-  return '/*' + value.join('\n') + '\n' + tab + '*/';
+
+  return '/*' + (
+    element.value.length > 1
+      ? element.value.map(function (line, i) {
+        let $tab = '';
+        if (i > 0) {
+          $tab = tab + that.getTab(element.depth + 1);
+        }
+        return $tab + line;
+      }).join('\n') + '\n'
+      : element.value.join('\n') + ' '
+    ) + '*/';
 }
 
 function formatDefault(that, element) {
   const tab = that.getTab(element.depth);
+
   splitByLineBreak(that, element);
 
   return (
@@ -73,7 +78,7 @@ function formatDefault(that, element) {
 }
 
 function isSpecialComment(element) {
-  return element.value[0] === '!';
+  return /(\s+|)!/.test(element.value[0]);
 }
 
 function isSectionTitle(element) {
