@@ -1,10 +1,15 @@
 const lasso = require('lasso-string');
 
 function splitByLineBreak(that, element) {
-  let raw = element.value.join(' ').trim().split(' ');
   let lines = [];
   let lineIndex = 0;
   let tabLength = that.getTab(element.depth + 2).length;
+  
+  let raw = element.value
+    .map(a => a.replace(/^(\s+|)\*/g, ''))
+    .join(' ')
+    .trim()
+    .split(' ');
 
   raw.forEach(function (word) {
     if (!lines[lineIndex]) {
@@ -35,7 +40,7 @@ function formatSectionTitle(that, element) {
       ? $tab + line + '\n'
       : $tab + line;
   });
-  return '/*' + value.join('') + '*/\n';
+  return '/*' + value.join('') + '*/';
 }
 
 function formatSpecialComment(that, element) {
@@ -55,11 +60,11 @@ function formatDefault(that, element) {
   splitByLineBreak(that, element);
 
   return (
-    '/*\n' +
+    '/**\n' +
 
     element.value.map(function (line, i) {
-      let $tab = that.getTab(element.depth + 1);
-      line = line.trim();
+      let $tab = that.getTab(element.depth);
+      line = '* ' + line.trim();
       return $tab + line;
     }).join('\n') +
 
