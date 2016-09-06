@@ -1,6 +1,11 @@
 const lasso = require('lasso-string');
 
 function isSpecialComment(element) {
+  /*!
+    Theme Name: casino
+    Version: 1.0
+    Author: HannesDev
+   */
   return /(\s+|)!/.test(element.value[0]);
 }
 
