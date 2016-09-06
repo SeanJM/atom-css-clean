@@ -1,7 +1,7 @@
 function characterSet(buffer) {
   let m = buffer.string.match(/^(@charset)([^;]+?);/);
 
-  buffer.string = buffer.string.length.substr(m[0].length);
+  buffer.string = buffer.string.substr(m[0].length);
 
   return {
     name : m[1],
