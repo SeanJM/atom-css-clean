@@ -7,7 +7,7 @@ function selector(buffer, depth) {
 
   return {
     content : c.content,
-    selector : c.arguments.split(',').map(a => a.trim())
+    selector : c.arguments.split(',').map(a => a.replace(/\s+/g, ' ').trim())
   };
 }
 
