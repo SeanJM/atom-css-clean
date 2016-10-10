@@ -15,6 +15,7 @@ function unzip(list) {
 }
 
 let PROPERTIES_LIST = unzip([
+  'all',
   'z-index',
   'content',
   'icon',
@@ -105,6 +106,7 @@ let PROPERTIES_LIST = unzip([
   'background-position',
   'background-size',
   'background-clip',
+  'isolation',
   'fill',
   'stroke',
   'stroke-miterlimit',
