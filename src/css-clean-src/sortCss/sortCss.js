@@ -5,6 +5,7 @@ const SORT_DEEP = [
   'sass function',
   'sass import',
   'sass include',
+  'sass variable assignment',
   'sass include arguments',
   'sass mixin',
   'sass include block',
