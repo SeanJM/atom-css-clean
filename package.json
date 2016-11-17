@@ -24,6 +24,7 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "eslint": "^3.9.1",
     "lasso-string": "^5.0.0"
   },
   "devDependencies": {
