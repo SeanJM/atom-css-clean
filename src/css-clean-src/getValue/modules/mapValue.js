@@ -22,7 +22,9 @@ const map = {
 };
 
 function mapValue(that, parent) {
-  return parent.map(element => map[element.scope](that, element, parent));
+  return parent.map(function (element) {
+    return map[element.scope](that, element, parent);
+  });
 }
 
 module.exports = mapValue;
