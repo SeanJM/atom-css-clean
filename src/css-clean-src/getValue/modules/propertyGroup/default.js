@@ -1,11 +1,12 @@
-const l = require('lasso-string');
 const splitByComma = require('../../../vendor/splitByComma');
 
-module.exports = function (that, element, siblings) {
+module.exports = function (that, element) {
   const tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
+
   let value = splitByComma(element.value);
   let align = new Array(element.align + 4).join(' ');
   let padding;
+
 
   if (element.align) {
     value = value
