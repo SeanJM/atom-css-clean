@@ -1,0 +1,27 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType" : "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "arrowFunctions": true,
+      "classes": true,
+      "restParams": true,
+      "spread": true
+    }
+  },
+
+  "rules": {
+    "space-before-function-paren": ["error", {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "ignore"
+    }],
+    "generator-star-spacing": [2, "before"], // enforce the spacing around the * in generator functions (off by default)
+    "keyword-spacing": ["error", { "before" : true, "after" : true }], // require a space after return, throw, and case
+    "no-extra-semi" : ["error"],
+    "no-unused-vars" : ["error"],
+    "semi" : ["error"],
+    "space-infix-ops": ["error", { "int32Hint" : true }], // require spaces around operators
+  }
+}
