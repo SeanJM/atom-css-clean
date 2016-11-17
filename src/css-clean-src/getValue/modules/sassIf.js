@@ -1,7 +1,6 @@
 
-function sassIf(that, element, parent) {
+function sassIf(that, element) {
   const mapValue = require('./mapValue');
-  const getValue = require('../getValue');
 
   const tab = new Array((element.depth * that.tabSize) + 1).join(that.tabChar);
   const $tab = new Array(that.tabSize + 1).join(that.tabChar);
@@ -24,7 +23,7 @@ function sassIf(that, element, parent) {
 
     "@else" : function () {
       let content = mapValue(that, element.content)
-        .map(value => `${tab}${$tab}${value}`).join(';\n');
+        .map(value => `${tab}${$tab}${value}`).join('\n');
 
       return `${element.name} {\n${content}\n${tab}}\n`;
     }
