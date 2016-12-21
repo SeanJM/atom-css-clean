@@ -4,11 +4,12 @@ const index = require('./index/index');
 const getValue = require('./getValue/getValue');
 
 function CleanCss(string) {
-  this.lineBreak = 80;
-  this.tabSize = 2;
-  // This is wrapped this way so that when the object is passed, the string
-  // can be mutated -- yes, I want mutation in this case.
+  let tabs = string.match(/^\s+/m);
   this.buffer = { string : string.trim() };
+  this.lineBreak = 80;
+  this.tabSize = tabs
+    ? tabs[0].length
+    : 2;
 }
 
 CleanCss.prototype.indent = function (length, type) {
