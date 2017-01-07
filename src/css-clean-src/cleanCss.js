@@ -4,20 +4,15 @@ const index = require('./index/index');
 const getValue = require('./getValue/getValue');
 
 function CleanCss(string) {
-  let tabs = string.match(/^\s+/m);
   this.buffer = { string : string.trim() };
   this.lineBreak = 80;
-  this.tabSize = tabs
-    ? tabs[0].length
-    : 2;
+  this.tabSize = 2;
+  this.tabChar = ' ';
 }
 
-CleanCss.prototype.indent = function (length, type) {
-  this.tabChar = type === 'space'
-    ? ' '
-    : type === 'tab'
-      ? '\t'
-      : undefined;
+CleanCss.prototype.indent = function (length, char) {
+  this.tabSize = length;
+  this.tabChar = char;
   return this;
 };
 
