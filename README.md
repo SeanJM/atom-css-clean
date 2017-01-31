@@ -2,6 +2,21 @@
 
 We all write code a little quickly sometimes. This is a package which offers a helping hand to sort, align and clean your CSS and SASS.
 
+## Configuration
+
+If you want 4 spaces and tabs, create a `.csscleanrc` file in the project root directory.
+
+example settings
+```
+{
+  "tab_space": 2,
+  "tab_char": "space",
+}
+```
+
+- `tab_space` -> Any number
+- `tab_char` -> "space" or "tab"
+
 ## Sorting properties
 
 ##### Before

@@ -1,24 +1,6 @@
+const path = require('path');
+const fs = require('fs');
 var cleanCss = require('./src/css-clean-src/cleanCss');
-
-function getTab(editorText) {
-  var char = editorText
-    .trim()
-    .match(/\{\s+([a-zA-Z]+)/g)
-    .map(function (a) {
-      return a.match(/\{(\s+)/)[1].replace(/\n/, '');
-    })
-    .filter(function (a) {
-      return a.length;
-    })
-    .sort(function (a, b) {
-      return a.length - b.length;
-    })[0];
-
-  return {
-    size : char ? char.length : 2,
-    char : /\t/.test(char) ? '\t' : ' ',
-  };
-}
 
 (function () {
   module.exports = {
@@ -35,7 +17,23 @@ function getTab(editorText) {
       var lineBreak = 80;
       var clean;
 
-      var tab = getTab(editorText);
+      let tab = {
+        size : 2,
+        char : ' '
+      };
+
+      try {
+        let config = JSON.parse(fs.readFileSync(path.join(atom.project.rootDirectories[0].path, '.csscleanrc'), 'utf8'));
+
+        if (config.tab_char === 'space') {
+          tab.char = ' ';
+        } else if (config.tab_char === 'tab') {
+          tab.char = '\t';
+        }
+
+        tab.size = config.tab_size || 2;
+
+      } catch (e) {}
 
       if (atom.config.settings && atom.config.settings.editor && atom.config.settings.editor.preferredLineLength) {
         lineBreak = atom.config.settings.editor.preferredLineLength;
