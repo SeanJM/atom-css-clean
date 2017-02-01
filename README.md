@@ -10,7 +10,7 @@ example settings
 ```
 {
   "tab_space": 2,
-  "tab_char": "space",
+  "tab_char": "space"
 }
 ```
 
