@@ -1,5 +1,5 @@
 {
-  "name": "css-clean",
+  "name": "atom-css-clean",
   "main": "main.js",
   "version": "2.19.0",
   "description": "A package for sorting and aligning CSS and SASS.",
@@ -18,12 +18,13 @@
   "scripts": {
     "jshint": "jshint"
   },
-  "repository": "https://github.com/SeanJM/css-clean",
+  "repository": "https://github.com/SeanJM/atom-css-clean",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "css-clean": "^1.1.0",
     "eslint": "^3.9.1",
     "lasso-string": "^5.0.0"
   },
