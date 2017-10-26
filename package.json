@@ -1,7 +1,7 @@
 {
   "name": "atom-css-clean",
   "main": "main.js",
-  "version": "2.24.0",
+  "version": "2.24.1",
   "description": "A package for sorting and aligning CSS and SASS.",
   "keywords": [
     "css",
